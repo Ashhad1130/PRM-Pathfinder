@@ -218,7 +218,6 @@ docs/               project plan, model-interface notes, experiment protocol
 
 ## Documentation
 
-- `docs/PROJECT_PLAN.md` — work packages, timeline, division of labour, deliverables
 - `docs/MODEL_INTERFACE.md` — the exact frozen PathFinder-PRM contract and why it must not drift
 - `docs/EXPERIMENTS.md` — protocol, controls (incl. contamination guard), how to report results
 
