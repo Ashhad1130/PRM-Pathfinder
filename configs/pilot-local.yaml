@@ -1,0 +1,53 @@
+# Correctness pilot for a memory-constrained machine (8 GB VRAM / 16 GB RAM).
+#
+# PURPOSE: prove the real checkpoint loads and scores steps correctly. NOT to produce
+# numbers. With most of the model offloaded, each forward pass takes seconds, so this
+# config caps the run at a couple of solutions per subset.
+#
+#   python scripts/run_eval.py --config configs/pilot-local.yaml --name pilot-local-a
+#
+# For real numbers use configs/baseline.yaml + configs/retrieval.yaml on a 16 GB+ GPU.
+
+run:
+  name: pilot-local
+  out_dir: runs
+  save_traces: true
+  log_every: 1
+
+data:
+  processbench_id: Qwen/ProcessBench
+  subsets: [gsm8k]
+  limit_per_subset: 2
+  pool_dir: data/pool
+
+retrieval:
+  enabled: false
+  encoder_name: sentence-transformers/all-MiniLM-L6-v2
+  pca_components: 128
+  top_k_questions: 8
+  top_k_steps: 2
+  index_dir: artifacts/index
+
+prm:
+  backend: hf
+  model_name: declare-lab/PathFinder-PRM-7B
+  dtype: float16                # fp16 halves the CPU-side memory pressure vs bf16 here
+  device_map: auto
+  attn_implementation: sdpa     # flash-attn is unavailable on Windows
+
+  # Weight budget, tuned for 8 GiB VRAM / ~7 GiB free RAM. Leave real headroom on the CPU
+  # side: overcommitting here makes Windows swap and the machine becomes unusable long
+  # before the run finishes. Whatever fits in neither goes to disk.
+  max_memory:
+    0: 6GiB
+    cpu: 3GiB
+  offload_folder: artifacts/offload
+
+  correctness_threshold: 0.5
+  early_stop: true
+  max_input_tokens: 4096
+  seed: 17
+
+prompt:
+  include_reference_labels: true
+  max_reference_chars: 600

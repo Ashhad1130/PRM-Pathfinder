@@ -1,0 +1,51 @@
+# Condition B — identical to baseline.yaml except `retrieval.enabled: true`.
+# Keep every prm.* value in lockstep with baseline.yaml. If they drift, the delta stops
+# measuring retrieval and starts measuring the config difference.
+
+run:
+  name: retrieval
+  out_dir: runs
+  save_traces: true
+  log_every: 25
+
+data:
+  processbench_id: Qwen/ProcessBench
+  subsets: [gsm8k, math, olympiadbench, omnimath]
+  limit_per_subset: null
+  pool_id: declare-lab/PathFinder-600K
+  pool_split: train
+  pool_max_items: 50000
+  pool_dir: data/pool
+
+retrieval:
+  enabled: true
+  encoder_name: sentence-transformers/all-MiniLM-L6-v2
+  encoder_batch_size: 128
+  pca_components: 128
+  pca_whiten: false
+
+  top_k_questions: 8            # stage 1 — dataset shift
+  top_k_steps: 2                # stage 2 — reasoning-style shift; 1-2 per the pitch
+  step_level: true              # set false to ablate stage 2
+
+  # Contamination guard. ProcessBench and PathFinder-600K share upstream sources, so a
+  # near-identical pool question would hand the grader the answer key.
+  max_question_similarity: 0.95
+  drop_exact_duplicates: true
+
+  index_dir: artifacts/index
+
+prm:
+  backend: hf
+  model_name: declare-lab/PathFinder-PRM-7B
+  dtype: bfloat16
+  device_map: auto
+  attn_implementation: auto
+  correctness_threshold: 0.5
+  early_stop: true
+  max_input_tokens: 8192
+  seed: 17
+
+prompt:
+  include_reference_labels: true
+  max_reference_chars: 600

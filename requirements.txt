@@ -1,0 +1,30 @@
+# Core — pinned loosely so the project keeps working on the lab cluster too.
+torch>=2.4
+transformers>=4.45
+datasets>=3.0
+huggingface_hub>=0.25
+accelerate>=1.0
+
+# Retrieval
+sentence-transformers>=3.0
+numpy>=1.26
+# NOTE: scikit-learn is deliberately NOT required. PCA is done with numpy's SVD in
+# retrieval/index.py — sklearn does an unguarded `import pyarrow` in utils/fixes.py, so a
+# broken or policy-blocked pyarrow makes sklearn unimportable and would take the retrieval
+# index down with it. Tests compare against sklearn's PCA when it happens to be installed.
+
+# Config / IO / reporting
+PyYAML>=6.0
+pandas>=2.0
+matplotlib>=3.8
+tqdm>=4.66
+
+# Optional, only for prm.backend == "hf4bit" (8 GB-VRAM path).
+# On Blackwell (sm_120) you may need a nightly build; see docs/EXPERIMENTS.md.
+# bitsandbytes>=0.45
+
+# Optional, big speedup on Linux + Ampere/Hopper. Not available on Windows.
+# flash-attn>=2.6
+
+# Dev
+pytest>=8.0

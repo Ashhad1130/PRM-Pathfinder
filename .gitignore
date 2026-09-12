@@ -1,0 +1,30 @@
+# Artifacts we regenerate — never commit these, they are large.
+data/pool/
+data/cache/
+artifacts/
+runs/
+*.npy
+*.npz
+*.faiss
+
+# HF caches
+.cache/
+hf_cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Keep the bundled test fixtures — they are tiny and the smoke test needs them.
+!tests/fixtures/

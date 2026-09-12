@@ -1,0 +1,49 @@
+﻿# Condition A on an 8 GB GPU, int4 weight-only (torchao). No disk offload.
+#
+# This is the config that makes the experiment tractable on this laptop. The whole model
+# sits in VRAM (~5.5 GB), so a forward pass costs milliseconds instead of the ~12s that
+# disk streaming costs.
+#
+# Pair with configs/pilot-int4-retrieval.yaml for Condition B. Both MUST use the same
+# backend and precision â€” an int4 number and a bf16 number are not comparable.
+
+run:
+  name: int4-b
+  out_dir: runs
+  save_traces: true
+  log_every: 10
+
+data:
+  processbench_id: Qwen/ProcessBench
+  subsets: [gsm8k, math, olympiadbench, omnimath]
+  limit_per_subset: 25          # raise once the timing is confirmed
+  pool_dir: data/pool
+
+retrieval:
+  enabled: true
+  encoder_name: sentence-transformers/all-MiniLM-L6-v2
+  pca_components: 128
+  top_k_questions: 8
+  top_k_steps: 2
+  step_level: true
+  max_question_similarity: 0.95
+  drop_exact_duplicates: true
+  index_dir: artifacts/index
+
+prm:
+  backend: int4
+  model_name: declare-lab/PathFinder-PRM-7B
+  dtype: bfloat16               # compute dtype; weights are int4
+  device_map: auto
+  attn_implementation: sdpa
+  int4_group_size: 64
+  int4_packing_format: tile_packed_to_4d   # the kernel that works on sm_120
+  correctness_threshold: 0.5
+  early_stop: true
+  max_input_tokens: 4096
+  seed: 17
+
+prompt:
+  include_reference_labels: true
+  max_reference_chars: 600
+

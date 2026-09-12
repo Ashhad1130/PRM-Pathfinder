@@ -1,0 +1,40 @@
+# End-to-end pipeline check. No GPU, no network, no model download.
+#
+# Every stage runs for real (pool parsing, PCA index, two-stage retrieval, prompt
+# assembly, scoring loop, ProcessBench metric) against bundled fixtures, a hashing
+# encoder and a hash-driven mock PRM.
+#
+# THE NUMBERS THIS PRODUCES ARE NOT RESULTS. It answers "does the plumbing work",
+# nothing else. Run it before every real experiment.
+
+run:
+  name: smoke
+  out_dir: runs
+  save_traces: true
+  log_every: 5
+
+data:
+  subsets: [gsm8k, math, olympiadbench, omnimath]
+  fixtures_dir: tests/fixtures/processbench
+  pool_dir: tests/fixtures/pool
+
+retrieval:
+  enabled: true
+  encoder_name: hashing         # offline stand-in; see retrieval/encoder.py
+  pca_components: 16
+  top_k_questions: 4
+  top_k_steps: 2
+  step_level: true
+  max_question_similarity: 0.95
+  drop_exact_duplicates: true
+  index_dir: artifacts/index-smoke
+
+prm:
+  backend: mock
+  correctness_threshold: 0.5
+  early_stop: true
+  seed: 17
+
+prompt:
+  include_reference_labels: true
+  max_reference_chars: 400

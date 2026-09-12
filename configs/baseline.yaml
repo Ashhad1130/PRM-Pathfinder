@@ -1,0 +1,33 @@
+# Condition A — PathFinder-PRM-7B exactly as published, no retrieval.
+# This run must reproduce the paper's ProcessBench numbers (avg F1 ~69.5 at bf16).
+# If it does not, stop and fix the adapter before running Condition B.
+
+run:
+  name: baseline
+  out_dir: runs
+  save_traces: true
+  log_every: 25
+
+data:
+  processbench_id: Qwen/ProcessBench
+  subsets: [gsm8k, math, olympiadbench, omnimath]
+  limit_per_subset: null        # null = full benchmark (3400 solutions)
+  pool_dir: data/pool
+
+retrieval:
+  enabled: false                # <- the only line that differs from retrieval.yaml
+
+prm:
+  backend: hf                   # hf4bit if you are on the 8 GB laptop
+  model_name: declare-lab/PathFinder-PRM-7B
+  dtype: bfloat16
+  device_map: auto
+  attn_implementation: auto
+  correctness_threshold: 0.5
+  early_stop: true
+  max_input_tokens: 8192
+  seed: 17
+
+prompt:
+  include_reference_labels: true
+  max_reference_chars: 600
