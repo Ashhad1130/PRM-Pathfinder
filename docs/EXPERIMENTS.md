@@ -5,15 +5,16 @@ gets run, what is held fixed, and what has to be reported alongside a number.
 
 ## The comparison
 
-| | Condition A | Condition B | Condition C (control) |
-| --- | --- | --- | --- |
-| Model | PathFinder-PRM-7B, frozen | same weights | same weights |
-| Prompt | model card, unmodified | + **retrieved** references, user turn only | + **randomly drawn** references, user turn only |
-| References per step | 0 | `top_k_steps` | the same `top_k_steps` |
-| Assistant turn | `... Math reasoning: <extra>, Consistency: <extra>` | byte-identical | byte-identical |
-| Threshold | 0.5 | 0.5 | 0.5 |
-| Data | ProcessBench, 4 subsets | identical solutions, identical order | identical solutions, identical order |
-| Config | `baseline.yaml` | `retrieval.yaml` | `control-random.yaml` |
+| | Condition A | Condition B | Condition C (control) | Condition D (ablation) |
+| --- | --- | --- | --- | --- |
+| Model | PathFinder-PRM-7B, frozen | same weights | same weights | same weights |
+| Prompt | model card, unmodified | + **retrieved** references | + **randomly drawn** references | + **retrieved** references, **labels stripped** |
+| References per step | 0 | `top_k_steps` | the same `top_k_steps` | the same `top_k_steps` |
+| Gold labels shown | — | yes, as `<+>`/`<->` | yes, as `<+>`/`<->` | **no** |
+| Assistant turn | `... Math reasoning: <extra>, Consistency: <extra>` | byte-identical | byte-identical | byte-identical |
+| Threshold | 0.5 | 0.5 | 0.5 | 0.5 |
+| Data | ProcessBench, 4 subsets | identical solutions and order | identical solutions and order | identical solutions and order |
+| Config | `baseline.yaml` | `retrieval.yaml` | `control-random.yaml` | `pilot-int4-nolabels.yaml` |
 
 Exactly one thing varies between any two of them: `retrieval.enabled` for A vs B,
 `retrieval.reference_mode` for B vs C. Keep it that way — if you change `prm.*` in one
@@ -34,6 +35,11 @@ accidental config drift from looking identical at the command line.
 Condition C is what makes B interpretable: B's prompts are longer than A's, so without a
 length-matched control, "retrieval helps" and "more text helps" are the same number. See
 [Condition C](#4-condition-c--the-random-reference-control).
+
+Condition D then splits the reference *text* from the reference *labels*, which B renders as
+the model's own `<+>`/`<->` verdict tokens. It is an ablation rather than an arm of the main
+comparison, so it declares the key it varies at the parity gate. On the run reported in
+[RESULTS.md](RESULTS.md) it carries most of the measured effect.
 
 ## Metric
 

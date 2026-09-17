@@ -96,6 +96,12 @@ references drawn uniformly from the pool: same length, no relevance. **C→B is 
 the hypothesis actually rests on** — if it is flat, the honest headline is that extra
 context helped, not retrieval.
 
+A fourth arm, **Condition D**, runs B's retrieval with the references' gold labels stripped
+(`prompt.include_reference_labels: false`). It exists because those labels are rendered as
+`<+>` / `<->` — the same tokens the scoring rule reads at the mask positions — so "the model
+saw examples" and "the model saw its own verdict tokens" are otherwise one treatment. D→B
+separates them, and on this run it carries most of the damage.
+
 ---
 
 ## Quickstart
@@ -142,9 +148,11 @@ python scripts/check_contamination.py --config configs/retrieval.yaml # READ THI
 python scripts/run_eval.py     --config configs/baseline.yaml       # Condition A
 python scripts/run_eval.py     --config configs/retrieval.yaml      # Condition B
 python scripts/run_eval.py     --config configs/control-random.yaml # Condition C (control)
+python scripts/run_eval.py     --config configs/pilot-int4-nolabels.yaml # Condition D (ablation)
 python scripts/compare_runs.py --a runs/baseline --b runs/retrieval \
     --exclude-contaminated runs/contamination.json
-python scripts/compare_runs.py --a runs/control-random --b runs/retrieval   # C -> B
+python scripts/compare_runs.py --a runs/control-random --b runs/retrieval   # C -> B, relevance
+python scripts/compare_runs.py --a runs/int4-d --b runs/retrieval           # D -> B, labels
 ```
 
 `compare_runs.py` writes the report table, per-subset deltas, bootstrap CIs, a McNemar test
