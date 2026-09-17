@@ -20,6 +20,9 @@ PROCESSBENCH_SUBSETS = ("gsm8k", "math", "olympiadbench", "omnimath")
 #: RetrievalConfig.reference_mode.
 REFERENCE_MODES = ("retrieved", "random")
 
+#: How a reference's gold judgement is rendered. See PromptConfig.label_style.
+LABEL_STYLES = ("tokens", "words")
+
 # Ordered by out-of-distribution severity, per the project's expected-evidence table.
 # Used by the analysis to test the "gains grow with difficulty" trend.
 OOD_ORDER = {"gsm8k": 0, "math": 1, "olympiadbench": 2, "omnimath": 3}
@@ -142,6 +145,13 @@ class PromptConfig:
     )
     #: Show the reference step's gold Math/Consistency labels alongside it.
     include_reference_labels: bool = True
+    #: How those labels are written when they are shown.
+    #:   "tokens" — as <+> / <->, which is what the model card's own format uses. Note that
+    #:              these are the two tokens the scoring rule compares at the mask
+    #:              positions, so this puts them into the model's context.
+    #:   "words"  — as "correct" / "incorrect". Identical information, no special tokens.
+    #: The pair isolates the token from the judgement it encodes; see docs/RESULTS.md.
+    label_style: str = "tokens"
     #: Truncate each reference step to this many characters (keeps prompts bounded).
     max_reference_chars: int = 600
 
@@ -247,6 +257,11 @@ def validate(cfg: Config) -> None:
             raise ValueError("retrieval.top_k_steps must be >= 1")
         if not 0.0 < cfg.retrieval.max_question_similarity <= 1.0:
             raise ValueError("retrieval.max_question_similarity must lie in (0, 1]")
+        if cfg.prompt.label_style not in LABEL_STYLES:
+            raise ValueError(
+                f"prompt.label_style must be one of {sorted(LABEL_STYLES)}, got "
+                f"{cfg.prompt.label_style!r}"
+            )
         if cfg.retrieval.reference_mode not in REFERENCE_MODES:
             raise ValueError(
                 f"retrieval.reference_mode must be one of {sorted(REFERENCE_MODES)}, got "

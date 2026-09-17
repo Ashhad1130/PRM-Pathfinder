@@ -94,3 +94,75 @@ def test_stage_two_fills_verdicts_and_appends_correctness():
 def test_previous_steps_are_joined_with_blank_lines():
     messages = build_messages("Q?", ("one", "two"), "three", [], CFG)
     assert messages[1]["content"].startswith("one\n\ntwo\n\nCurrent Step: three")
+
+
+# --------------------------------------------------------------------------------------
+# Label rendering. <+> and <-> are the tokens the scoring rule compares at the mask
+# positions, so putting them in the user turn is a treatment, not a formatting choice.
+# --------------------------------------------------------------------------------------
+
+
+def labelled_reference(math_ok=False, consistency_ok=False):
+    from rapfprm.data.pool import PoolItem
+    from rapfprm.retrieval.retriever import Reference
+
+    item = PoolItem(
+        qid="q",
+        question="What is 2+2?",
+        prev_steps=(),
+        step="2+2=5",
+        math_ok=math_ok,
+        consistency_ok=consistency_ok,
+    )
+    return Reference(item=item, question_similarity=0.5, step_similarity=0.5)
+
+
+def test_token_labels_put_verdict_tokens_in_the_user_turn():
+    """The default reproduces the model card's format, tokens included."""
+    from rapfprm.config import PromptConfig
+    from rapfprm.prm.prompts import NEG, render_reference_block
+
+    block = render_reference_block([labelled_reference()], PromptConfig(label_style="tokens"))
+    assert NEG in block
+
+
+def test_word_labels_carry_the_same_judgement_without_the_tokens():
+    from rapfprm.config import PromptConfig
+    from rapfprm.prm.prompts import NEG, POS, render_reference_block
+
+    block = render_reference_block([labelled_reference()], PromptConfig(label_style="words"))
+    assert POS not in block and NEG not in block
+    assert "incorrect" in block
+    assert "math and consistency error" in block, "the judgement itself must survive"
+
+
+def test_word_labels_still_distinguish_correct_from_incorrect():
+    from rapfprm.config import PromptConfig
+    from rapfprm.prm.prompts import render_reference_block
+
+    cfg = PromptConfig(label_style="words")
+    good = render_reference_block([labelled_reference(True, True)], cfg)
+    bad = render_reference_block([labelled_reference(False, False)], cfg)
+    assert "Math reasoning: correct" in good
+    assert "Math reasoning: incorrect" in bad
+
+
+def test_dropping_labels_beats_both_styles_to_the_punch():
+    """include_reference_labels: false removes the line regardless of style."""
+    from rapfprm.config import PromptConfig
+    from rapfprm.prm.prompts import render_reference_block
+
+    for style in ("tokens", "words"):
+        block = render_reference_block(
+            [labelled_reference()], PromptConfig(include_reference_labels=False, label_style=style)
+        )
+        assert "judgement" not in block
+
+
+def test_config_rejects_an_unknown_label_style():
+    import pytest as _pytest
+
+    from rapfprm.config import load_config
+
+    with _pytest.raises(ValueError, match="label_style"):
+        load_config("configs/retrieval.yaml", {"prompt.label_style": "emoji"})
