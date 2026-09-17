@@ -40,18 +40,24 @@ error-typing gets better — especially on out-of-distribution problems.
 
 ## Answer
 
-**No, and the reason is not what the headline number suggests.**
+**No — and two thirds of the damage turns out to have nothing to do with retrieval.**
 
-Adding retrieved references costs PathFinder-PRM about 21 F1 points. But a control arm that
-injects the *same number of references drawn at random* costs 23 points — so the damage
-comes from putting reference text in the prompt at all, not from retrieval. Ranked
-references beat random ones by 2.0 points on the full sample and by −0.2 once
-pool-contaminated eval items are excluded from both arms. No subset's interval excludes
-zero.
+Adding retrieved references costs about 21 F1 points. Four arms take that apart:
 
-| | A: no retrieval | C: random refs | B: retrieved refs |
-| --- | ---: | ---: | ---: |
-| average F1 | **67.3** | 44.3 | 46.3 |
+| | average F1 | vs A |
+| --- | ---: | ---: |
+| **A** no references | **67.3** | |
+| **D** references, gold labels stripped | 60.9 | −6.5 |
+| **B** references with gold labels | 46.3 | −21.0 |
+| **C** *random* references with gold labels | 44.3 | −23.0 |
+
+Most of the loss arrives with the labels, not the examples. Each reference in Condition B
+ends with `Teacher's judgement: Math reasoning: <->, Consistency: <->` — and `<+>`/`<->` are
+the very tokens whose logits the scoring rule compares to produce a verdict. Removing that
+line recovers 14.6 points (95% CI [−22.0, −7.1], p < 0.0001).
+
+Relevance itself does nothing: C→B is +2.0 with an interval spanning zero, and −0.2 once
+pool-contaminated eval items are dropped from both arms.
 
 Condition A lands at 67.3 against the paper's published 69.5, which is the anchor that makes
 the rest believable. Measured at int4 on 50 solutions per subset; deltas are valid between
