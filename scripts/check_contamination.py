@@ -11,6 +11,17 @@ Reports, per subset:
   verbatim   normalised exact question match in the pool
   near       cosine similarity above retrieval.max_question_similarity (needs the index)
 
+Writes per-subset counts AND the uid of every flagged eval solution, so the comparison can
+be recomputed with the contaminated items dropped from *both* conditions:
+
+    python scripts/compare_runs.py --a runs/baseline --b runs/retrieval
+        --exclude-contaminated runs/contamination.json
+
+That second table matters because the retrieval-time guard filters the *neighbours*, not
+the eval items: a contaminated MATH question still gets graded, just with more distant
+references than a clean question gets. Dropping those items from the analysis is the only
+way to see the subset without that asymmetry.
+
 Run this before quoting any Condition B number, and put the table in the report.
 """
 
@@ -46,6 +57,10 @@ def main() -> None:
     pool_questions = {normalise_question(item.question) for item in pool}
     print(f"pool: {len(pool)} items, {len(pool_questions)} unique questions")
 
+    # uid -> why it is flagged. Only flagged solutions are recorded; on the full benchmark
+    # that is a few hundred rows rather than 3,400.
+    flagged: dict[str, dict] = {}
+
     near_by_subset: dict[str, int] = {}
     if not args.skip_near:
         index = PoolIndex.load(cfg.retrieval.index_dir)
@@ -57,10 +72,23 @@ def main() -> None:
             projected = index.project(raw)
             best = (projected @ index.question_matrix.T).max(axis=1)
             near_by_subset[subset] = int((best >= cfg.retrieval.max_question_similarity).sum())
+            for solution, similarity in zip(group, best):
+                if similarity >= cfg.retrieval.max_question_similarity:
+                    flagged.setdefault(
+                        solution.uid, {"subset": subset, "verbatim": False}
+                    )["near_duplicate"] = True
+                    flagged[solution.uid]["max_similarity"] = round(float(similarity), 4)
 
     rows = []
     for subset, group in group_by_subset(solutions).items():
-        verbatim = sum(1 for s in group if normalise_question(s.problem) in pool_questions)
+        verbatim = 0
+        for solution in group:
+            if normalise_question(solution.problem) in pool_questions:
+                verbatim += 1
+                entry = flagged.setdefault(
+                    solution.uid, {"subset": subset, "near_duplicate": False}
+                )
+                entry["verbatim"] = True
         rows.append(
             {
                 "subset": subset,
@@ -95,6 +123,11 @@ def main() -> None:
         "pool_unique_questions": len(pool_questions),
         "max_question_similarity": cfg.retrieval.max_question_similarity,
         "per_subset": rows,
+        #: Every eval solution that overlaps the pool, with the reason. Feed this to
+        #: compare_runs.py --exclude-contaminated to get the same table computed on the
+        #: uncontaminated remainder of each subset.
+        "flagged_uids": dict(sorted(flagged.items())),
+        "n_flagged": len(flagged),
         "total": {
             "n": total_n,
             "verbatim": total_verbatim,
@@ -110,6 +143,15 @@ def main() -> None:
         print(
             "\nThe guard in retrieval/retriever.py drops these. Without it, Condition B "
             "would be reading labelled copies of the questions it is grading."
+        )
+
+    if flagged:
+        print(
+            f"\n{len(flagged)} eval solution(s) flagged by uid. The guard filters their "
+            "neighbours but still grades them, so also report the comparison with them "
+            f"excluded from both conditions:\n"
+            f"  python scripts/compare_runs.py --a runs/baseline --b runs/retrieval "
+            f"--exclude-contaminated {out_path}"
         )
 
 

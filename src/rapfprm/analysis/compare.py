@@ -38,8 +38,25 @@ def load_predictions(run_dir: str | Path) -> dict[str, dict]:
     return {row["uid"]: row for row in rows}
 
 
-def align(run_a: str | Path, run_b: str | Path) -> list[AlignedSubset]:
-    """Pair the two runs solution by solution, refusing to compare mismatched runs."""
+def load_contaminated_uids(path: str | Path) -> set[str]:
+    """Read the uids `check_contamination.py` flagged as overlapping the retrieval pool."""
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if "flagged_uids" not in payload:
+        raise ValueError(
+            f"{path} has no `flagged_uids` — it was written by an older version of "
+            "check_contamination.py. Re-run it to record which eval solutions are affected."
+        )
+    return set(payload["flagged_uids"])
+
+
+def align(
+    run_a: str | Path, run_b: str | Path, exclude_uids: set[str] | None = None
+) -> list[AlignedSubset]:
+    """Pair the two runs solution by solution, refusing to compare mismatched runs.
+
+    `exclude_uids` drops solutions from **both** conditions — the only sound way to do it.
+    Dropping them from one would compare different data and the delta would be noise.
+    """
     a_rows, b_rows = load_predictions(run_a), load_predictions(run_b)
 
     shared = sorted(set(a_rows) & set(b_rows))
@@ -53,6 +70,15 @@ def align(run_a: str | Path, run_b: str | Path) -> list[AlignedSubset]:
             f"in B, {len(shared)} shared). Comparing a subset of one run against all of the "
             "other would bias the delta. Re-run both conditions over identical data."
         )
+
+    if exclude_uids:
+        kept = [uid for uid in shared if uid not in exclude_uids]
+        if not kept:
+            raise ValueError(
+                f"All {len(shared)} shared solution(s) are on the exclusion list, so there "
+                "is nothing left to compare."
+            )
+        shared = kept
 
     by_subset: dict[str, AlignedSubset] = {}
     for uid in shared:
@@ -109,6 +135,81 @@ def bootstrap_delta_ci(
     )
 
 
+def bootstrap_average_delta_ci(
+    aligned: list[AlignedSubset],
+    n_resamples: int = 2000,
+    alpha: float = 0.05,
+    seed: int = 0,
+) -> tuple[float, float]:
+    """Paired bootstrap CI for the macro-average delta — the headline number itself.
+
+    Resampling happens *within* each subset, which is how the benchmark is built: the
+    average is a mean over four per-subset F1s, not a score over one pooled population.
+    Resampling across the pool instead would let a draw change the subset balance and would
+    give an interval for a quantity nobody reports.
+    """
+    rng = np.random.default_rng(seed)
+    arrays = [
+        (
+            np.asarray(s.gold, dtype=int),
+            np.asarray(s.predicted_a, dtype=int),
+            np.asarray(s.predicted_b, dtype=int),
+        )
+        for s in aligned
+    ]
+
+    def f1_of(g: np.ndarray, p: np.ndarray) -> float | None:
+        is_error = g != -1
+        hits = g == p
+        error_acc = float(hits[is_error].mean()) if is_error.any() else None
+        correct_acc = float(hits[~is_error].mean()) if (~is_error).any() else None
+        return harmonic_f1(error_acc, correct_acc)
+
+    samples = np.empty(n_resamples, dtype=float)
+    for i in range(n_resamples):
+        deltas = []
+        for gold, a, b in arrays:
+            idx = rng.integers(0, len(gold), size=len(gold))
+            g = gold[idx]
+            f1_a, f1_b = f1_of(g, a[idx]), f1_of(g, b[idx])
+            if f1_a is None or f1_b is None:
+                deltas = None
+                break
+            deltas.append(f1_b - f1_a)
+        samples[i] = np.nan if deltas is None else float(np.mean(deltas))
+
+    if np.all(np.isnan(samples)):
+        return float("nan"), float("nan")
+    return (
+        float(np.nanquantile(samples, alpha / 2)),
+        float(np.nanquantile(samples, 1 - alpha / 2)),
+    )
+
+
+def pooled_contrast(aligned: list[AlignedSubset], seed: int = 0) -> dict:
+    """The whole experiment as one test, alongside the per-subset breakdown.
+
+    Per-subset McNemar tests run out of discordant solutions long before they run out of
+    solutions: at 50 per subset there are typically 10-20, under the ~25 the test needs to
+    be trustworthy. Pooling the paired decisions across all four subsets fixes that without
+    pretending the sample is larger than it is — it answers "did B and A decide differently
+    over these 200 solutions", which is a different and weaker question than the per-subset
+    F1 delta, and is reported as such.
+    """
+    gold = [g for s in aligned for g in s.gold]
+    a = [p for s in aligned for p in s.predicted_a]
+    b = [p for s in aligned for p in s.predicted_b]
+
+    low, high = bootstrap_average_delta_ci(aligned, seed=seed)
+    return {
+        "n_solutions": len(gold),
+        "average_delta_ci95": [low, high],
+        #: True when the interval for the macro-average delta stays on one side of zero.
+        "significant": bool(not np.isnan(low) and not np.isnan(high) and (low > 0 or high < 0)),
+        "mcnemar_pooled": mcnemar(gold, a, b),
+    }
+
+
 def ood_trend(subsets: list[str], deltas: list[float]) -> dict:
     """Does the gain grow with OOD severity? Slope + Spearman over the severity ranks."""
     ranks = np.array([OOD_ORDER.get(s, 99) for s in subsets], dtype=float)
@@ -163,9 +264,21 @@ def ood_trend(subsets: list[str], deltas: list[float]) -> dict:
     }
 
 
-def compare(run_a: str | Path, run_b: str | Path, seed: int = 0) -> dict:
-    """Full A-vs-B analysis."""
-    aligned = align(run_a, run_b)
+def compare(
+    run_a: str | Path,
+    run_b: str | Path,
+    seed: int = 0,
+    exclude_uids: set[str] | None = None,
+    exclusion_label: str | None = None,
+) -> dict:
+    """Full A-vs-B analysis.
+
+    Pass `exclude_uids` to recompute everything on a subset of the solutions — used for the
+    contamination-excluded table, where the flagged eval items are dropped from both
+    conditions. `exclusion_label` is carried into the output so a table can never be
+    mistaken for the unfiltered one.
+    """
+    aligned = align(run_a, run_b, exclude_uids=exclude_uids)
 
     rows = []
     for subset in aligned:
@@ -210,10 +323,13 @@ def compare(run_a: str | Path, run_b: str | Path, seed: int = 0) -> dict:
     return {
         "run_a": str(run_a),
         "run_b": str(run_b),
+        "excluded_uids": len(exclude_uids) if exclude_uids else 0,
+        "exclusion_label": exclusion_label,
         "per_subset": rows,
         "average_f1_a": average_a,
         "average_f1_b": average_b,
         "average_delta": (average_b - average_a) if usable else None,
+        "overall": pooled_contrast(aligned, seed=seed),
         "undefined_subsets": [r["subset"] for r in rows if not r["well_defined"]],
         "ood_trend": ood_trend(
             [r["subset"] for r in usable], [r["delta_f1"] for r in usable]
@@ -228,6 +344,17 @@ def to_markdown(result: dict) -> str:
         "",
         f"- A: `{result['run_a']}`",
         f"- B: `{result['run_b']}`",
+    ]
+
+    if result.get("exclusion_label"):
+        lines += [
+            f"- **Filtered: {result['exclusion_label']}** "
+            f"({result.get('excluded_uids', 0)} solution(s) removed from both conditions). "
+            "The `n` column below is what survived, so these numbers are not comparable "
+            "with the unfiltered table.",
+        ]
+
+    lines += [
         "",
         "| Subset | n | OOD | F1 (A) | F1 (B) | Δ F1 | 95% CI on Δ | McNemar p | Sig. |",
         "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -261,6 +388,28 @@ def to_markdown(result: dict) -> str:
             + ". Those subsets contain only error cases or only clean cases, so the "
             "harmonic mean is undefined and they are excluded from the average — this is "
             "a property of the sample, not a score of zero. Expected on `--limit` pilots.",
+            "",
+        ]
+
+    overall = result.get("overall")
+    if overall:
+        lo, hi = overall["average_delta_ci95"]
+        mc = overall["mcnemar_pooled"]
+        ci = "n/a" if lo is None or hi is None else f"[{pct(lo, '+.1f')}, {pct(hi, '+.1f')}]"
+        lines += [
+            "## Whole experiment",
+            "",
+            f"- Solutions compared: **{overall['n_solutions']}** (paired, identical in both arms)",
+            f"- 95% CI on the average Δ: **{ci}** "
+            f"— {'excludes' if overall['significant'] else 'includes'} zero",
+            f"- Pooled McNemar: **p = {mc['p_value']:.4f}**, {mc['discordant']} discordant "
+            f"({mc['b_only']} fixed by B, {mc['a_only']} broken by B), "
+            f"reliable = {mc.get('reliable')}",
+            "",
+            "> Pooling is what makes the paired test usable at this sample size; the "
+            "per-subset tests above rarely reach the ~25 discordant solutions they need. "
+            "The pooled test asks whether the two arms decide differently overall, which is "
+            "weaker than the per-subset F1 deltas it sits beside.",
             "",
         ]
 
