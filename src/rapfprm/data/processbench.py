@@ -9,6 +9,7 @@ step is correct). That single convention drives the whole evaluation.
 from __future__ import annotations
 
 import json
+import random
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Iterator
@@ -109,6 +110,51 @@ def _load_hub_subset(repo_id: str, subset: str) -> list[dict]:
         return list(load_dataset(repo_id, split=subset))
 
 
+def subsample(solutions: list[Solution], limit: int, seed: int) -> list[Solution]:
+    """Take `limit` solutions, keeping the subset's error/clean ratio.
+
+    **Never take a prefix.** ProcessBench ships every erroneous solution first, so
+    `rows[:limit]` returns an all-error sample for any limit below the error count — 100
+    error and 0 clean solutions per subset at `--limit 100`, and the same for math,
+    olympiadbench and omnimath even at `--limit 400`. `correct_acc` is then undefined and
+    so is F1, which is the *good* case: the metric refuses to score an empty population,
+    so the run announces the problem instead of reporting a number computed from one half
+    of the benchmark.
+
+    Stratified sampling fixes it. Both populations are sampled at the same rate, so the
+    sample keeps the subset's natural balance, and the draw is seeded — every arm loading
+    the same subset, limit and seed gets the identical solutions, which is what makes the
+    conditions paired.
+    """
+    if limit >= len(solutions):
+        return solutions
+
+    errors = [s for s in solutions if s.label != -1]
+    clean = [s for s in solutions if s.label == -1]
+
+    # Proportional allocation, with at least one of each population whenever both exist —
+    # a sample with an empty population has an undefined F1 and cannot be compared.
+    n_error = round(limit * len(errors) / len(solutions))
+    n_error = min(len(errors), max(1 if errors else 0, n_error))
+    n_clean = min(len(clean), limit - n_error)
+    if clean and n_clean == 0:
+        n_clean, n_error = 1, limit - 1
+
+    # Shuffle once per (seed, subset) and take prefixes, rather than drawing a fresh sample
+    # per limit. That makes the samples NESTED: the limit-50 sample is contained in the
+    # limit-100 one, so a run can be extended or trimmed and `--resume` reuses every
+    # solution already scored. Seeding with the limit would make each size an unrelated
+    # draw and throw that work away.
+    rng = random.Random(f"{seed}:{solutions[0].subset}")
+    shuffled_errors, shuffled_clean = list(errors), list(clean)
+    rng.shuffle(shuffled_errors)
+    rng.shuffle(shuffled_clean)
+    picked = shuffled_errors[:n_error] + shuffled_clean[:n_clean]
+    # Restore dataset order so traces and logs stay readable; the sample is already fixed.
+    order = {id(s): i for i, s in enumerate(solutions)}
+    return sorted(picked, key=lambda s: order[id(s)])
+
+
 def load_processbench(cfg: DataConfig) -> list[Solution]:
     """Load the configured subsets, from local fixtures if set, else the Hub."""
     solutions: list[Solution] = []
@@ -119,10 +165,14 @@ def load_processbench(cfg: DataConfig) -> list[Solution]:
         else:
             rows = _load_hub_subset(cfg.processbench_id, subset)
 
-        if cfg.limit_per_subset is not None:
-            rows = rows[: cfg.limit_per_subset]
+        subset_solutions = [_normalise(row, subset, i) for i, row in enumerate(rows)]
 
-        solutions.extend(_normalise(row, subset, i) for i, row in enumerate(rows))
+        if cfg.limit_per_subset is not None:
+            subset_solutions = subsample(
+                subset_solutions, cfg.limit_per_subset, cfg.sample_seed
+            )
+
+        solutions.extend(subset_solutions)
 
     if not solutions:
         raise RuntimeError(
