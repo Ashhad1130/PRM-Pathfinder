@@ -26,20 +26,38 @@ error-typing gets better — especially on out-of-distribution problems.
 
 > If we add retrieval into PathFinder-PRM's error-typing process, does it get better at
 > identifying the correct error type — especially on the hardest, most out-of-distribution
-> problems?
+> problems, and does that gain survive a length-matched random-reference control?
 
 **Expected evidence pattern.** RetrievalPRM's strongest result was not a single score but a
-*trend*: gains grew with problem difficulty. We look for the same signature.
+*trend*: gains grew with problem difficulty. We looked for the same signature.
 
-| ProcessBench subset | OOD severity | Prediction if the mechanism is real |
-| --- | --- | --- |
-| GSM8K | in-distribution | ~no change |
-| MATH | moderate | modest gain |
-| OlympiadBench | severe | larger gain |
-| OmniMATH | extreme | largest gain |
+| ProcessBench subset | OOD severity | Prediction if the mechanism is real | Measured Δ F1 (A→B) |
+| --- | --- | --- | ---: |
+| GSM8K | in-distribution | ~no change | −15.9 |
+| MATH | moderate | modest gain | −21.1 |
+| OlympiadBench | severe | larger gain | −20.5 |
+| OmniMATH | extreme | largest gain | −26.6 |
 
-A flat or negative delta is a publishable finding too, and the analysis is written to report
-it honestly (see `docs/EXPERIMENTS.md`).
+## Answer
+
+**No, and the reason is not what the headline number suggests.**
+
+Adding retrieved references costs PathFinder-PRM about 21 F1 points. But a control arm that
+injects the *same number of references drawn at random* costs 23 points — so the damage
+comes from putting reference text in the prompt at all, not from retrieval. Ranked
+references beat random ones by 2.0 points on the full sample and by −0.2 once
+pool-contaminated eval items are excluded from both arms. No subset's interval excludes
+zero.
+
+| | A: no retrieval | C: random refs | B: retrieved refs |
+| --- | ---: | ---: | ---: |
+| average F1 | **67.3** | 44.3 | 46.3 |
+
+Condition A lands at 67.3 against the paper's published 69.5, which is the anchor that makes
+the rest believable. Measured at int4 on 50 solutions per subset; deltas are valid between
+arms at identical precision, absolute values are not comparable to bf16.
+
+Full numbers, intervals, significance tests and caveats: **[docs/RESULTS.md](docs/RESULTS.md)**.
 
 ---
 
@@ -52,15 +70,25 @@ it honestly (see `docs/EXPERIMENTS.md`).
                       └──────────────────────────────────────────┘
                       ┌──────────────────────────────────────────┐
                  ┌───▶│  Condition B (ours)                      │
-                 │    │  retrieve k refs → inject into the user  │──▶ per-step verdicts
-  retrieval pool │    │  turn → SAME frozen model, same tokens   │
-  (PathFinder-   │    └──────────────────────────────────────────┘
-   600K) ────────┘
+  retrieval pool │    │  retrieve k refs → inject into the user  │──▶ per-step verdicts
+  (PathFinder-   │    │  turn → SAME frozen model, same tokens   │
+   600K) ────────┤    └──────────────────────────────────────────┘
+                 │    ┌──────────────────────────────────────────┐
+                 └───▶│  Condition C (control)                   │
+                      │  SAME k refs, drawn at RANDOM → same     │──▶ per-step verdicts
+                      │  prompt length, no relevance             │
+                      └──────────────────────────────────────────┘
 ```
 
 The **only** difference between A and B is extra reference text in the user message.
 Model weights, special tokens, decoding rule and scoring threshold are byte-identical —
 that is what makes the comparison clean.
+
+Condition C is what makes it *interpretable*. B's prompts are ~841 tokens against A's ~350,
+so an A→B gain could be relevance or could be length. C injects the same number of
+references drawn uniformly from the pool: same length, no relevance. **C→B is the contrast
+the hypothesis actually rests on** — if it is flat, the honest headline is that extra
+context helped, not retrieval.
 
 ---
 
@@ -83,9 +111,12 @@ pytest
 ```
 
 `smoke.py` runs the **entire** pipeline (pool → index → retrieval → prompt build →
-scoring → ProcessBench F1 → A-vs-B comparison) against a deterministic mock PRM and a tiny
-bundled fixture set. Use it to develop and to check your changes before spending GPU time.
-Its numbers are meaningless by construction; what it proves is that the plumbing is intact.
+scoring → ProcessBench F1 → comparison) for all three arms against a deterministic mock PRM
+and a tiny bundled fixture set. Use it to develop and to check your changes before spending
+GPU time. Its numbers are meaningless by construction; what it proves is that the plumbing
+is intact — and that the control arm really is one (same reference count as B, far lower
+similarity), which is the part that would otherwise stay invisible until the GPU hours were
+already spent.
 
 ### 2. Verify the real model interface
 
@@ -102,13 +133,35 @@ adapter returns the same verdict. **Run this before trusting any real number.**
 python scripts/build_pool.py         --config configs/retrieval.yaml  # download + parse pool
 python scripts/build_index.py        --config configs/retrieval.yaml  # SBERT -> PCA -> matrix
 python scripts/check_contamination.py --config configs/retrieval.yaml # READ THIS FIRST
-python scripts/run_eval.py           --config configs/baseline.yaml   # Condition A
-python scripts/run_eval.py           --config configs/retrieval.yaml  # Condition B
-python scripts/compare_runs.py --a runs/baseline --b runs/retrieval
+python scripts/run_eval.py     --config configs/baseline.yaml       # Condition A
+python scripts/run_eval.py     --config configs/retrieval.yaml      # Condition B
+python scripts/run_eval.py     --config configs/control-random.yaml # Condition C (control)
+python scripts/compare_runs.py --a runs/baseline --b runs/retrieval \
+    --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/control-random --b runs/retrieval   # C -> B
 ```
 
 `compare_runs.py` writes the report table, per-subset deltas, bootstrap CIs, a McNemar test
-and the OOD-trend plot into `runs/comparison/`.
+and the OOD-trend plot into `runs/comparison/`. With `--exclude-contaminated` it writes the
+same table a second time with pool-overlapping eval solutions dropped from both conditions
+— the retrieval guard filters a contaminated question's *neighbours*, but the question is
+still graded, and that asymmetry has to be reported.
+
+### 4. Or run all of that with one command, on a cloud GPU
+
+```bash
+bash scripts/lightning/setup.sh                       # install + verify (Lightning AI Studio, or any Linux GPU box)
+bash scripts/lightning/run_experiment.sh --dry-run    # print the plan
+bash scripts/lightning/run_experiment.sh --limit 400  # pool -> index -> contamination -> A -> B -> C -> compare
+```
+
+The driver runs all three arms, writes the three contrasts (A→B, A→C, C→B) and, whenever
+`runs/contamination.json` exists, a contamination-excluded version of each. It skips stages
+whose output already exists, resumes every eval stage from its `predictions.jsonl`, tees
+each stage to `runs/logs/`, and refuses to start if the arms' configs differ in anything but
+`retrieval.enabled` / `retrieval.reference_mode`. `--no-control` drops Condition C when
+compute is short. Machine sizing, cost estimates and the CPU/GPU split are in
+`docs/LIGHTNING.md`.
 
 ### Measured on the built pool: MATH is contaminated
 
@@ -117,9 +170,10 @@ and the OOD-trend plot into `runs/comparison/`.
 | Subset | n | verbatim in pool | near-dup (cos ≥ 0.95) |
 | --- | ---: | ---: | ---: |
 | gsm8k | 400 | 0 (0.0%) | 0 |
-| **math** | 1000 | **596 (59.6%)** | 602 |
+| **math** | 1000 | **596 (59.6%)** | 605 |
 | olympiadbench | 1000 | 0 (0.0%) | 4 |
-| omnimath | 1000 | 0 (0.0%) | 22 |
+| omnimath | 1000 | 0 (0.0%) | 24 |
+| **total** | 3400 | **596 (17.5%)** | **633** |
 
 Nearly 60% of the MATH subset appears **verbatim** in PathFinder-600K; the other three are
 clean. The contamination guard drops these (it fired on 1,149 of 6,568 retrieval queries in
@@ -127,6 +181,12 @@ a full pass), but the concentration matters: MATH is the "moderate OOD" cell of 
 evidence table, so an unguarded run would fake a trend out of memorisation. Lead with
 OlympiadBench and OmniMATH — uncontaminated *and* the most out-of-distribution.
 See `docs/EXPERIMENTS.md#controls`.
+
+All 633 flagged solutions are recorded by uid, and `compare_runs.py --exclude-contaminated`
+rebuilds the whole comparison without them — necessary because the guard filters a
+contaminated question's *neighbours* while still grading the question itself. The near-dup
+counts move by a handful of items between encoder runs (they sit right on the 0.95 cosine
+threshold); the verbatim count is exact and stable.
 
 ---
 
@@ -166,6 +226,12 @@ tokens vs ~350). Profiling shows retrieval itself costs **71 ms/step — 1.2%**;
 If ~32 h is still too much, cut the sample rather than the method — `--limit 400` per
 subset is ~15 h and still detects the 6–13 point effects the source papers report.
 
+`--limit` takes a **stratified, seeded, nested** sample, not a prefix: ProcessBench lists
+all erroneous solutions first, so slicing would hand you a subset with no clean solutions
+and an undefined F1. Every arm draws the identical solutions (`data.sample_seed`), and a
+smaller limit is always a subset of a larger one, so runs can be grown without rescoring.
+See `docs/EXPERIMENTS.md#sampling-limit-draws-it-does-not-slice`.
+
 ### Long runs are resumable — use it
 
 Model loading peaks host RAM, and on a 16 GB machine that is close enough to the edge that
@@ -204,7 +270,7 @@ bf16 one. State the backend beside every number.
 ## Repository layout
 
 ```
-configs/            experiment configs (baseline / retrieval / smoke)
+configs/            experiment configs (baseline / retrieval / control-random / smoke)
 src/rapfprm/
   data/             ProcessBench loading, retrieval-pool construction
   retrieval/        SBERT encoder, PCA+cosine index, two-stage retriever
@@ -219,7 +285,9 @@ docs/               project plan, model-interface notes, experiment protocol
 ## Documentation
 
 - `docs/MODEL_INTERFACE.md` — the exact frozen PathFinder-PRM contract and why it must not drift
+- `docs/RESULTS.md` — **what we found**: the three-arm decomposition, intervals, caveats
 - `docs/EXPERIMENTS.md` — protocol, controls (incl. contamination guard), how to report results
+- `docs/LIGHTNING.md` — one-command cloud run: Studio setup, stages, resuming, cost
 
 ## References
 
