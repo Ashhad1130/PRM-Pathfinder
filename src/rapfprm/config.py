@@ -16,6 +16,10 @@ import yaml
 
 PROCESSBENCH_SUBSETS = ("gsm8k", "math", "olympiadbench", "omnimath")
 
+#: How Condition B's references are chosen. "random" is the control arm — see
+#: RetrievalConfig.reference_mode.
+REFERENCE_MODES = ("retrieved", "random")
+
 # Ordered by out-of-distribution severity, per the project's expected-evidence table.
 # Used by the analysis to test the "gains grow with difficulty" trend.
 OOD_ORDER = {"gsm8k": 0, "math": 1, "olympiadbench": 2, "omnimath": 3}
@@ -31,6 +35,11 @@ class DataConfig:
     limit_per_subset: int | None = None
     #: Local fixture directory; when set, ProcessBench is read from JSONL instead of the Hub.
     fixtures_dir: str | None = None
+    #: Seed for the stratified subsample `limit_per_subset` triggers. Every condition must
+    #: use the same value, or the arms grade different solutions and the pairing is void.
+    #: ProcessBench lists all erroneous solutions first, so the sample must be drawn, never
+    #: sliced — see data/processbench.py::subsample.
+    sample_seed: int = 17
 
     pool_id: str = "declare-lab/PathFinder-600K"
     pool_split: str = "train"
@@ -57,6 +66,17 @@ class RetrievalConfig:
     top_k_steps: int = 2
     #: Skip stage 2 and take steps straight from the top questions.
     step_level: bool = True
+
+    #: "retrieved" — rank the pool by similarity, the mechanism under test.
+    #: "random"    — draw references uniformly from the pool instead. This is the control
+    #:               arm (Condition C): same number of references, same rendering, same
+    #:               contamination guard, same prompt length — only the *relevance* is
+    #:               removed. If random references help as much as similar ones, the
+    #:               effect was extra context, not retrieval. See docs/EXPERIMENTS.md.
+    reference_mode: str = "retrieved"
+    #: Seed for the random arm. The draw is also mixed with a hash of the query, so a
+    #: resumed run reproduces the references it would have drawn in one sitting.
+    random_seed: int = 17
 
     #: Contamination guard: drop any pool question this similar to the eval question.
     #: ProcessBench and PathFinder-600K share upstream sources (MATH/GSM8K), so without
@@ -227,3 +247,8 @@ def validate(cfg: Config) -> None:
             raise ValueError("retrieval.top_k_steps must be >= 1")
         if not 0.0 < cfg.retrieval.max_question_similarity <= 1.0:
             raise ValueError("retrieval.max_question_similarity must lie in (0, 1]")
+        if cfg.retrieval.reference_mode not in REFERENCE_MODES:
+            raise ValueError(
+                f"retrieval.reference_mode must be one of {sorted(REFERENCE_MODES)}, got "
+                f"{cfg.retrieval.reference_mode!r}"
+            )
