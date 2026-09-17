@@ -17,6 +17,8 @@ matplotlib.use("Agg")  # headless: these run on a cluster with no display
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
+from ..config import OOD_ORDER  # noqa: E402
+
 
 def _plottable(result: dict) -> list[dict]:
     """Only subsets with a defined F1 can be drawn; the rest have nothing to plot."""
@@ -91,6 +93,58 @@ def plot_ood_trend(result: dict, out_path: str | Path) -> Path:
     ax.set_ylabel("Δ F1  (B − A)")
     ax.set_xlabel("increasing out-of-distribution severity →")
     ax.set_title("Does the retrieval gain grow with difficulty?")
+    ax.grid(axis="y", alpha=0.3)
+    fig.tight_layout()
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out_path, dpi=200)
+    plt.close(fig)
+    return out_path
+
+
+def plot_arms(arms: list[tuple[str, dict]], out_path: str | Path, title: str | None = None) -> Path:
+    """One grouped bar chart over every arm of the experiment.
+
+    `arms` is [(label, metrics_dict), ...] in the order they should be drawn, where each
+    metrics_dict is a run's `metrics.json`. The baseline belongs first: the whole point of
+    the figure is how far each treatment sits below (or above) it, and the eye reads that
+    from left to right.
+
+    Subsets keep OOD order, and a subset missing from any arm is dropped rather than drawn
+    with a gap, because a bar group with a hole in it invites the reader to compare two
+    arms over different data.
+    """
+    if not arms:
+        raise ValueError("Nothing to plot: no arms were given.")
+
+    shared = [
+        s
+        for s in sorted(arms[0][1]["per_subset"], key=lambda s: OOD_ORDER.get(s, 99))
+        if all(m["per_subset"].get(s, {}).get("f1") is not None for _, m in arms)
+    ]
+    if not shared:
+        raise ValueError(
+            "No subset has a defined F1 in every arm, so there is nothing comparable to "
+            "draw. Usual cause: a pilot small enough that some subset has only error cases."
+        )
+
+    x = np.arange(len(shared))
+    width = min(0.8 / len(arms), 0.28)
+
+    fig, ax = plt.subplots(figsize=(8.4, 4.6))
+    for i, (label, metrics) in enumerate(arms):
+        offset = (i - (len(arms) - 1) / 2) * width
+        values = [100 * metrics["per_subset"][s]["f1"] for s in shared]
+        bars = ax.bar(x + offset, values, width, label=label)
+        ax.bar_label(bars, fmt="%.1f", fontsize=7, padding=1)
+
+    ax.set_xticks(x, shared)
+    ax.set_ylabel("ProcessBench F1")
+    ax.set_xlabel("increasing out-of-distribution severity →")
+    ax.set_title(title or "Step-level error detection by condition")
+    ax.set_ylim(0, 100)
+    ax.legend(fontsize=8, ncols=min(len(arms), 4))
     ax.grid(axis="y", alpha=0.3)
     fig.tight_layout()
 
