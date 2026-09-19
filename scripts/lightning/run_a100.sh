@@ -66,6 +66,16 @@ while [ $# -gt 0 ]; do
 done
 
 # ---- the five arms -------------------------------------------------------------------
+# Validate up front. config_for() is called inside $(...) further down, and a `die` in a
+# subshell only kills the subshell — the parent would sail on with an empty config path and
+# report success over a study it never ran.
+for arm in $ARMS; do
+  case "$arm" in
+    A|B|C|D|E) ;;
+    *) die "unknown arm '$arm' in --arms \"$ARMS\" (valid: A B C D E)" ;;
+  esac
+done
+
 # label -> config : run name : one-line description
 config_for() { case "$1" in
   A) echo "configs/baseline.yaml" ;;
@@ -124,7 +134,7 @@ cat <<PLAN
 PLAN
 
 for arm in $ARMS; do
-  printf '  %s  %-32s -> %s/%s\n' "$arm" "$(describe "$arm")" "$OUT_DIR" "$(name_for "$arm")"
+  printf '  %s  %-42s -> %s/%s\n' "$arm" "$(describe "$arm")" "$OUT_DIR" "$(name_for "$arm")"
 done
 echo
 

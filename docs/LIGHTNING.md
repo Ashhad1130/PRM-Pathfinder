@@ -30,9 +30,31 @@ The arms it runs:
 | D | retrieved, no labels | the reference text alone |
 | E | retrieved, labels as words | the verdict tokens, judgement held fixed |
 
-Use tmux. A closed browser tab kills a foreground process and the full set is hours. If it
-dies, run the identical command again: finished stages skip and each arm resumes from its
-own `predictions.jsonl`.
+### Surviving seven unattended hours
+
+Three separate things can end a long run, and tmux only fixes one of them.
+
+**The Studio's idle timeout is the one that will actually catch you.** Lightning stops an
+idle Studio to protect your credits, and that takes the machine with it — tmux included.
+Before starting, open the Studio's compute settings and set auto-shutdown to its longest
+value, or turn it off. Files survive the stop; the run does not.
+
+**A closed browser tab** kills a foreground process. That is what tmux is for:
+
+```bash
+tmux new -s prm 'bash scripts/lightning/keepalive.sh --limit 100'
+tmux attach -t prm      # detach again with ctrl-b then d
+```
+
+**A transient failure at hour five** — a CUDA OOM on one long solution, a dropped Hub
+connection — is what `keepalive.sh` is for. It re-invokes the runner until the study
+completes, which is safe because every stage is resumable and each arm continues from its
+own `predictions.jsonl`. It gives up after six consecutive failures, and it refuses to retry
+at all when the first attempt dies within a minute, since that means a config or setup
+error that no amount of retrying will fix.
+
+Check your credit balance first as well: a seven-hour A100 session is a large withdrawal,
+and running out mid-run stops the machine.
 
 The rest of this page is the manual path, the int4 route for smaller cards, and the
 troubleshooting table.
