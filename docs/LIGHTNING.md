@@ -4,7 +4,42 @@ The laptop path (8 GB VRAM, int4, ~32 h for a full A+B run) is documented in the
 This page is the cloud path: a Lightning Studio with a real GPU, where the model fits in
 bf16 and the numbers are directly comparable to the published ones.
 
-Three commands:
+## On a 40 GB A100: one script
+
+If the Studio has a big GPU, there is nothing to assemble. `run_a100.sh` installs the
+project, verifies the prompt contract against the model card, builds the pool and index,
+measures contamination, runs all five arms at bf16, computes all seven contrasts with their
+contamination-excluded twins, draws the figure, profiles the verdicts and prints a summary:
+
+```bash
+git clone https://github.com/Ashhad1130/PRM-Pathfinder.git && cd PRM-Pathfinder
+git checkout feat/retrieval-control-arm
+
+bash scripts/lightning/run_a100.sh --dry-run        # see the plan, run nothing
+bash scripts/lightning/run_a100.sh --pilot          # 25/subset, ~1 h, confirms the setup
+tmux new -s prm 'bash scripts/lightning/run_a100.sh --limit 100'
+```
+
+The arms it runs:
+
+| | References | Isolates |
+| --- | --- | --- |
+| A | none | the baseline; should land near the published 69.5 |
+| B | retrieved, labels as `<+>`/`<->` | the full treatment |
+| C | random, labels as `<+>`/`<->` | prompt length, not relevance |
+| D | retrieved, no labels | the reference text alone |
+| E | retrieved, labels as words | the verdict tokens, judgement held fixed |
+
+Use tmux. A closed browser tab kills a foreground process and the full set is hours. If it
+dies, run the identical command again: finished stages skip and each arm resumes from its
+own `predictions.jsonl`.
+
+The rest of this page is the manual path, the int4 route for smaller cards, and the
+troubleshooting table.
+
+---
+
+Three commands for the manual path:
 
 ```bash
 bash scripts/lightning/setup.sh                      # install + verify, ~5 min

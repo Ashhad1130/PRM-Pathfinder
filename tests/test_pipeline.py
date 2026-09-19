@@ -454,3 +454,72 @@ def test_parity_rejects_two_configs_describing_the_same_arm():
     result = run_parity("configs/retrieval.yaml", "configs/retrieval.yaml")
     assert result.returncode == 1
     assert "SAME arm" in result.stdout
+
+
+# --------------------------------------------------------------------------------------
+# The bf16 arms used by the A100 script. Same parity rules as the int4 pilots: each arm may
+# differ from Condition B in exactly one declared key.
+# --------------------------------------------------------------------------------------
+
+
+def test_bf16_arms_share_everything_but_their_defining_key():
+    b = load_config("configs/retrieval.yaml")
+    arms = {
+        "A": load_config("configs/baseline.yaml"),
+        "C": load_config("configs/control-random.yaml"),
+        "D": load_config("configs/ablation-nolabels.yaml"),
+        "E": load_config("configs/ablation-wordlabels.yaml"),
+    }
+    for label, cfg in arms.items():
+        assert cfg.prm == b.prm, f"arm {label}: prm drifted"
+        assert cfg.data == b.data, f"arm {label}: data drifted"
+        assert cfg.prm.backend == "hf", f"arm {label} must be bf16, not {cfg.prm.backend}"
+
+    assert arms["A"].retrieval.enabled is False
+    assert arms["C"].retrieval.reference_mode == "random"
+    assert arms["D"].prompt.include_reference_labels is False
+    assert arms["E"].prompt.label_style == "words"
+
+    # D and E differ from B in the prompt block and nowhere else.
+    for label in ("D", "E"):
+        diffs = [
+            f
+            for f in vars(b.prompt)
+            if getattr(b.prompt, f) != getattr(arms[label].prompt, f)
+        ]
+        assert len(diffs) == 1, f"arm {label} varies {diffs}, expected exactly one key"
+
+
+def test_every_arm_writes_to_its_own_directory():
+    names = [
+        load_config(p).run.name
+        for p in (
+            "configs/baseline.yaml",
+            "configs/retrieval.yaml",
+            "configs/control-random.yaml",
+            "configs/ablation-nolabels.yaml",
+            "configs/ablation-wordlabels.yaml",
+        )
+    ]
+    assert len(names) == len(set(names)), f"run names collide: {names}"
+
+
+def test_summary_maps_every_arm_to_a_real_config():
+    """The summary hardcodes run directory names; they must match what the configs write."""
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_summary", "scripts/lightning/_summary.py"
+    )
+    summary = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(summary)
+
+    expected = {
+        "A": "configs/baseline.yaml",
+        "B": "configs/retrieval.yaml",
+        "C": "configs/control-random.yaml",
+        "D": "configs/ablation-nolabels.yaml",
+        "E": "configs/ablation-wordlabels.yaml",
+    }
+    for arm, config_path in expected.items():
+        assert summary.ARM_RUNS[arm] == load_config(config_path).run.name
