@@ -1,0 +1,3841 @@
+{
+  "pool_items": 50000,
+  "pool_unique_questions": 15316,
+  "max_question_similarity": 0.95,
+  "per_subset": [
+    {
+      "subset": "gsm8k",
+      "n": 400,
+      "verbatim": 0,
+      "verbatim_pct": 0.0,
+      "near_duplicate": 0
+    },
+    {
+      "subset": "math",
+      "n": 1000,
+      "verbatim": 596,
+      "verbatim_pct": 59.6,
+      "near_duplicate": 605
+    },
+    {
+      "subset": "olympiadbench",
+      "n": 1000,
+      "verbatim": 0,
+      "verbatim_pct": 0.0,
+      "near_duplicate": 4
+    },
+    {
+      "subset": "omnimath",
+      "n": 1000,
+      "verbatim": 0,
+      "verbatim_pct": 0.0,
+      "near_duplicate": 24
+    }
+  ],
+  "flagged_uids": {
+    "math-0": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-1": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-10": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-101": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-102": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-105": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-106": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-107": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-108": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-109": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-110": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-111": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-112": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-113": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-114": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-115": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-116": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-117": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-119": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-12": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-120": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-121": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-122": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-125": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-126": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-128": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-129": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-13": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-130": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-133": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-134": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-136": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-137": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-138": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-139": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-140": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-143": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-147": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-148": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-150": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-152": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-155": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-158": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-159": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-16": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-161": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-162": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-163": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-164": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-165": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-166": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-167": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-168": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-169": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-170": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-171": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-172": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-173": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-175": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-176": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-177": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-178": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-179": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-180": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-181": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-182": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-183": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-185": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-186": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-187": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-188": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-189": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-190": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-192": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-194": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-195": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-197": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-199": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-2": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-20": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-200": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-201": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-202": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-204": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-205": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-206": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-209": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-21": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-210": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-212": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-213": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-215": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-216": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-217": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-22": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-220": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-223": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-224": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-23": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-230": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-231": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-232": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-233": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-234": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-235": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-237": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-238": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-239": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-24": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-240": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-241": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-242": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-243": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-244": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-245": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-246": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-247": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-248": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-25": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-250": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-252": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-253": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-254": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-255": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-256": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-257": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-258": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-259": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-261": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-262": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-264": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-265": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-266": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-267": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-268": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-269": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-270": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-273": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-275": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-276": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-277": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-279": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-28": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-280": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-281": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-282": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-283": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-284": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-288": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-289": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-29": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-291": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-292": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-293": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-295": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-296": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-298": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-30": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-300": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-301": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-305": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-306": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-308": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-310": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-311": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-312": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-316": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-317": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-32": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-320": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-322": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-323": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-324": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-325": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-326": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-327": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-329": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-33": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-333": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9594
+    },
+    "math-334": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-335": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-336": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-339": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-34": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-340": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-341": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-342": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-343": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-344": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-345": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-347": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-349": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-35": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-352": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-353": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-354": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-355": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-356": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-357": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-358": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-359": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-360": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-361": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-364": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-365": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-366": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-367": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-368": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-369": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-37": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-370": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-371": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-374": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-375": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-377": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-378": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-379": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-38": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-380": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-381": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-382": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-383": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-384": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-386": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-388": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9863
+    },
+    "math-39": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-390": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-391": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-392": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-395": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-396": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-397": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-399": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-4": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-401": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-402": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-403": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-404": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-405": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-407": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-408": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-41": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-410": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-411": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-412": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-413": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-414": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-415": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-416": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-417": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-419": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-42": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-422": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-423": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-426": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-427": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-429": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-43": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-430": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-434": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-435": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-439": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-440": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-441": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-444": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-446": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-448": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-451": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-453": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-454": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-455": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-456": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-457": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-459": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-46": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-460": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-463": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-464": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-465": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-466": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-467": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-468": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-469": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-47": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-470": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-471": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-472": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-474": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-475": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-476": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-478": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-48": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-480": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-481": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-483": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-484": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-487": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9531
+    },
+    "math-488": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-489": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-49": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-490": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-491": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-492": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-493": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-494": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-495": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-496": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-497": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-5": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-501": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-502": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-504": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-505": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-507": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-509": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-51": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-513": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-514": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-518": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-52": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-521": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-522": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-526": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-527": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-530": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-531": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-532": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-535": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-537": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9713
+    },
+    "math-538": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-540": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-541": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-542": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-544": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-545": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-547": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-548": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-549": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-55": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-550": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-551": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-552": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-555": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-559": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-56": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-560": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-561": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-562": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-563": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-566": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-567": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-568": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-569": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-57": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-571": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-572": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-575": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-578": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-579": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-581": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-582": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-584": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-585": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-590": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-593": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-594": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-595": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-596": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-598": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-599": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-6": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-60": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-600": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-601": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-602": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-604": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-606": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-610": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-611": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-619": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-62": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-620": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-622": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-624": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-625": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-626": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-627": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-628": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-630": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-632": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-633": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-634": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-636": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-637": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-638": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-64": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-640": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-642": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-644": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9519
+    },
+    "math-648": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-651": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-653": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-655": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-656": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-657": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-659": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-661": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-662": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-663": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-664": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-667": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-668": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-670": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-671": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-674": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-675": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-677": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-678": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-679": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-682": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-683": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-684": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-688": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-69": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-691": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-692": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-694": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-695": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-696": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-697": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-698": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-7": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-701": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-703": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-704": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-706": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-71": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-710": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-712": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-714": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-715": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-717": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-718": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-72": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-720": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-721": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-726": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-727": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-73": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-730": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-731": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-733": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-735": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-74": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-741": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-742": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-743": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-747": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-748": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-751": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-752": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-753": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-755": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-756": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-757": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-759": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-760": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-761": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-762": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-765": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-766": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-769": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-77": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-770": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-772": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-774": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-777": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-78": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-780": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-781": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-782": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-784": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-785": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-789": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-79": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-790": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-791": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-792": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9545
+    },
+    "math-793": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-795": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-797": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-799": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-801": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-802": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-803": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-804": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-806": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-807": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-808": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-810": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-813": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-815": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-816": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-818": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-819": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-82": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-820": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-822": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-827": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-828": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-829": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-83": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-832": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-833": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-834": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-836": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-838": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-842": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-843": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9796
+    },
+    "math-844": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-846": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-847": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-848": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-849": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-85": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-850": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-852": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-854": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-855": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-857": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-858": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-859": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-861": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-862": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-863": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-864": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-869": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-87": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-872": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-873": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-875": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-876": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-877": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-878": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-879": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-88": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-880": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-884": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-887": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-89": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-891": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-892": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-897": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-899": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-9": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-901": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-904": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9533
+    },
+    "math-908": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-909": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-913": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-916": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-920": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-921": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-926": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-929": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-93": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-930": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-931": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-932": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-936": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-937": {
+      "subset": "math",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9829
+    },
+    "math-939": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-94": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-940": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-942": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-943": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-945": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-946": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-948": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-949": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-950": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-954": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-959": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-961": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-962": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-963": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-964": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-966": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-969": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-973": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-974": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-978": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-980": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-982": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-989": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-99": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-990": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-991": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-992": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-993": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-994": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-996": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-997": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-998": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "math-999": {
+      "subset": "math",
+      "verbatim": true,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "olympiadbench-197": {
+      "subset": "olympiadbench",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9866
+    },
+    "olympiadbench-248": {
+      "subset": "olympiadbench",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9669
+    },
+    "olympiadbench-669": {
+      "subset": "olympiadbench",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9866
+    },
+    "olympiadbench-720": {
+      "subset": "olympiadbench",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9792
+    },
+    "omnimath-170": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9725
+    },
+    "omnimath-218": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9982
+    },
+    "omnimath-244": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.967
+    },
+    "omnimath-260": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9958
+    },
+    "omnimath-274": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9935
+    },
+    "omnimath-338": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9718
+    },
+    "omnimath-367": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9546
+    },
+    "omnimath-407": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.987
+    },
+    "omnimath-416": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9644
+    },
+    "omnimath-424": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9715
+    },
+    "omnimath-44": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9509
+    },
+    "omnimath-453": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9862
+    },
+    "omnimath-493": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9896
+    },
+    "omnimath-524": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9892
+    },
+    "omnimath-607": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9918
+    },
+    "omnimath-693": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 1.0
+    },
+    "omnimath-712": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9974
+    },
+    "omnimath-721": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9769
+    },
+    "omnimath-748": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9958
+    },
+    "omnimath-764": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9862
+    },
+    "omnimath-877": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9832
+    },
+    "omnimath-885": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9956
+    },
+    "omnimath-951": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9834
+    },
+    "omnimath-973": {
+      "subset": "omnimath",
+      "verbatim": false,
+      "near_duplicate": true,
+      "max_similarity": 0.9502
+    }
+  },
+  "n_flagged": 633,
+  "total": {
+    "n": 3400,
+    "verbatim": 596,
+    "verbatim_pct": 17.5
+  }
+}

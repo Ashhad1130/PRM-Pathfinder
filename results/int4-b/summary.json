@@ -1,0 +1,88 @@
+{
+  "run_name": "int4-b",
+  "condition": "B (retrieval)",
+  "environment": {
+    "python": "3.10.0",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "git_revision": "c99f1da",
+    "backend": "int4",
+    "model_name": "declare-lab/PathFinder-PRM-7B",
+    "torch": "2.11.0+cu128",
+    "cuda_available": true,
+    "gpu": "NVIDIA GeForce RTX 5070 Laptop GPU"
+  },
+  "n_solutions": 200,
+  "n_scored_this_session": 200,
+  "n_resumed": 0,
+  "wall_seconds": 11204.8,
+  "metrics": {
+    "per_subset": {
+      "gsm8k": {
+        "subset": "gsm8k",
+        "n": 50,
+        "n_error": 26,
+        "n_correct": 24,
+        "error_acc": 0.4230769230769231,
+        "correct_acc": 0.75,
+        "f1": 0.540983606557377,
+        "well_defined": true
+      },
+      "math": {
+        "subset": "math",
+        "n": 50,
+        "n_error": 30,
+        "n_correct": 20,
+        "error_acc": 0.5333333333333333,
+        "correct_acc": 0.5,
+        "f1": 0.5161290322580646,
+        "well_defined": true
+      },
+      "olympiadbench": {
+        "subset": "olympiadbench",
+        "n": 50,
+        "n_error": 33,
+        "n_correct": 17,
+        "error_acc": 0.42424242424242425,
+        "correct_acc": 0.5882352941176471,
+        "f1": 0.4929577464788733,
+        "well_defined": true
+      },
+      "omnimath": {
+        "subset": "omnimath",
+        "n": 50,
+        "n_error": 38,
+        "n_correct": 12,
+        "error_acc": 0.23684210526315788,
+        "correct_acc": 0.4166666666666667,
+        "f1": 0.30201342281879195,
+        "well_defined": true
+      }
+    },
+    "average_f1": 0.46302095202827664,
+    "subset_order": [
+      "gsm8k",
+      "math",
+      "olympiadbench",
+      "omnimath"
+    ],
+    "undefined_subsets": [],
+    "average_over": [
+      "gsm8k",
+      "math",
+      "olympiadbench",
+      "omnimath"
+    ]
+  },
+  "retrieval": {
+    "mode": "retrieved",
+    "queries": 735,
+    "references_returned": 1470,
+    "references_per_query": 2.0,
+    "filtered_exact_duplicate": 77,
+    "filtered_similarity": 6,
+    "empty_results": 0,
+    "mean_question_similarity": 0.6175237172720384,
+    "mean_step_similarity": 0.5022455498778902
+  },
+  "dropped_references_for_length": 0
+}
