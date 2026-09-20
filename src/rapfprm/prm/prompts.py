@@ -62,11 +62,19 @@ def render_reference_block(references: list[Reference], cfg: PromptConfig) -> st
             f"Step: {sanitise_reference(item.step, cfg.max_reference_chars)}",
         ]
         if cfg.include_reference_labels:
-            math_token = POS if item.math_ok else NEG
-            consistency_token = POS if item.consistency_ok else NEG
+            if cfg.label_style == "words":
+                # Same judgement, written in plain English. This is the arm that separates
+                # "the model was told the verdict" from "the model was shown the tokens it
+                # reads its own verdict from": the information is identical, the special
+                # tokens are gone.
+                math_label = "correct" if item.math_ok else "incorrect"
+                consistency_label = "correct" if item.consistency_ok else "incorrect"
+            else:
+                math_label = POS if item.math_ok else NEG
+                consistency_label = POS if item.consistency_ok else NEG
             lines.append(
-                f"Teacher's judgement: Math reasoning: {math_token}, "
-                f"Consistency: {consistency_token} ({item.error_type})"
+                f"Teacher's judgement: Math reasoning: {math_label}, "
+                f"Consistency: {consistency_label} ({item.error_type})"
             )
         blocks.append("\n".join(lines))
 

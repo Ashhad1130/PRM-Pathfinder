@@ -272,3 +272,125 @@ def test_parse_row_skips_rows_whose_labels_are_still_masked():
 def test_parse_row_rejects_malformed_input():
     assert parse_row({"inputs": [], "labels": []}) is None
     assert parse_row({}) is None
+
+
+# --------------------------------------------------------------------------------------
+# Condition C: the random-reference control.
+#
+# Its whole job is to be identical to Condition B except for relevance. Every test below
+# pins one of the ways that equivalence could quietly break — if it does, a null result
+# and a real result become indistinguishable.
+# --------------------------------------------------------------------------------------
+
+
+@pytest.fixture
+def big_pool():
+    """Enough distinct questions that a uniform draw is very unlikely to match the top hit."""
+    # Explicit qids: make_item's default derives one from the first 12 characters, which
+    # these questions share — they would all collapse onto a single pool question.
+    return [
+        make_item(
+            f"Question number {i} about {topic}?",
+            f"Step {i}: compute {i} x {i}.",
+            qid=f"q{i}",
+        )
+        for i, topic in enumerate(
+            ["apples", "pears", "derivatives", "integrals", "triangles", "primes",
+             "vectors", "matrices", "probability", "logarithms", "series", "limits"]
+        )
+    ]
+
+
+def make_retriever(pool, **overrides):
+    cfg_kwargs = dict(
+        encoder_name="hashing",
+        pca_components=8,
+        top_k_questions=3,
+        top_k_steps=2,
+        max_question_similarity=0.95,
+    )
+    cfg_kwargs.update(overrides)
+    cfg = RetrievalConfig(**cfg_kwargs)
+    encoder = HashingEncoder(dim=64)
+    index = build_index(pool, cfg, encoder=encoder)
+    return Retriever(items=pool, index=index, cfg=cfg, encoder=encoder)
+
+
+def test_random_mode_returns_the_same_number_of_references(big_pool):
+    """Prompt length must match Condition B, or the control confounds what it controls."""
+    treatment = make_retriever(big_pool)
+    control = make_retriever(big_pool, reference_mode="random")
+
+    query = ("Question number 0 about apples?", "Step 0: compute 0 x 0.")
+    assert len(control.retrieve(*query)) == len(treatment.retrieve(*query)) == 2
+
+
+def test_random_mode_is_deterministic_for_the_same_query(big_pool):
+    """A run resumed mid-way must draw the references it would have drawn in one sitting."""
+    first = make_retriever(big_pool, reference_mode="random")
+    second = make_retriever(big_pool, reference_mode="random")
+
+    query = ("Question number 3 about integrals?", "Step 3: compute 3 x 3.")
+    assert [r.item.qid for r in first.retrieve(*query)] == [
+        r.item.qid for r in second.retrieve(*query)
+    ]
+
+
+def test_random_mode_does_not_depend_on_query_order(big_pool):
+    """Seeding from a counter would make the control unreproducible after a resume."""
+    fresh = make_retriever(big_pool, reference_mode="random")
+    warmed = make_retriever(big_pool, reference_mode="random")
+    for i in range(5):  # simulate five earlier solutions in the same session
+        warmed.retrieve(f"Question number {i} about apples?", f"Step {i}: compute {i} x {i}.")
+
+    query = ("Question number 7 about vectors?", "Step 7: compute 7 x 7.")
+    assert [r.item.qid for r in fresh.retrieve(*query)] == [
+        r.item.qid for r in warmed.retrieve(*query)
+    ]
+
+
+def test_different_queries_draw_different_references(big_pool):
+    """A constant draw would be a fixed-prompt ablation, not a random-reference control."""
+    control = make_retriever(big_pool, reference_mode="random", random_seed=3)
+    drawn = {
+        tuple(r.item.qid for r in control.retrieve(f"Question number {i} about x?", f"Step {i}."))
+        for i in range(8)
+    }
+    assert len(drawn) > 1
+
+
+def test_random_mode_still_applies_the_contamination_guard(big_pool):
+    """The control must be filtered exactly like the treatment, or they differ twice."""
+    control = make_retriever(big_pool, reference_mode="random", top_k_questions=len(big_pool))
+    query = big_pool[0].question
+
+    refs = control.retrieve(query, big_pool[0].step)
+
+    assert all(r.item.question != query for r in refs)
+    assert control.stats.filtered_exact_duplicate >= 1
+
+
+def test_random_mode_is_recorded_in_the_stats(big_pool):
+    """summary.json must say which arm produced it; the two are otherwise identical."""
+    control = make_retriever(big_pool, reference_mode="random")
+    control.retrieve("Question number 2 about derivatives?", "Step 2: compute 2 x 2.")
+
+    stats = control.stats.as_dict()
+    assert stats["mode"] == "random"
+    assert "mean_step_similarity" in stats
+
+
+def test_random_references_are_less_similar_than_retrieved_ones(big_pool):
+    """The control's evidence that it really is one: relevance is gone, count is not."""
+    treatment = make_retriever(big_pool)
+    control = make_retriever(big_pool, reference_mode="random")
+
+    for i in range(len(big_pool)):
+        query = (f"Question number {i} about apples?", f"Step {i}: compute {i} x {i}.")
+        treatment.retrieve(*query)
+        control.retrieve(*query)
+
+    assert (
+        control.stats.as_dict()["mean_step_similarity"]
+        < treatment.stats.as_dict()["mean_step_similarity"]
+    )

@@ -7,219 +7,186 @@ Pratik Goyal & Ashhad Raza Quadri · Supervisor: Lei Tang
 
 ---
 
-## The one-paragraph version
+## The question
 
-Two papers improve step-level math graders (Process Reward Models) in unrelated ways.
-**RetrievalPRM** (Zhu et al. 2025, arXiv:2502.14361) retrieves similar solved problems and
-shows them to the grader before it judges a step — an open-book exam. **PathFinder-PRM**
-(Pala et al. 2025, arXiv:2505.19706) replaces the binary correct/wrong verdict with a
-hierarchical one: first *what kind* of error (math vs. consistency), then how good the step
-is. Nobody has combined them. This project inserts RetrievalPRM's retrieval step in front of
-PathFinder-PRM's **frozen, unmodified** error-classification stage and measures whether the
-error-typing gets better — especially on out-of-distribution problems.
+Two papers improve step-level math graders in unrelated ways. **RetrievalPRM**
+(Zhu et al. 2025, arXiv:2502.14361) shows the grader similar solved problems before it
+judges a step — an open-book exam. **PathFinder-PRM** (Pala et al. 2025, arXiv:2505.19706)
+replaces the binary correct/wrong verdict with a hierarchical one: first *what kind* of
+error, then how good the step is. Nobody had combined them.
 
-**No training. No new data collection.** Inference only, on an already-released 7B checkpoint.
+> Does inserting retrieval in front of PathFinder-PRM's error-typing stage make it better at
+> identifying errors, especially on out-of-distribution problems — and does any gain survive
+> a length-matched control?
 
----
+No training, no new data. Inference only, on the released 7B checkpoint, with the model's
+prompt contract held byte-identical across conditions.
 
-## Research question
+## The answer
 
-> If we add retrieval into PathFinder-PRM's error-typing process, does it get better at
-> identifying the correct error type — especially on the hardest, most out-of-distribution
-> problems?
+**No. Retrieval buys nothing here, and most of the damage it appears to cause comes from
+something else entirely.**
 
-**Expected evidence pattern.** RetrievalPRM's strongest result was not a single score but a
-*trend*: gains grew with problem difficulty. We look for the same signature.
+| | references shown | average F1 | vs A |
+| --- | --- | ---: | ---: |
+| **A** baseline | none | **67.3** | |
+| **D** ablation | retrieved, labels stripped | 60.9 | −6.5 |
+| **B** treatment | retrieved, labels as `<+>` / `<->` | 46.3 | −21.0 |
+| **C** control | **random**, labels as `<+>` / `<->` | 44.3 | −23.0 |
 
-| ProcessBench subset | OOD severity | Prediction if the mechanism is real |
-| --- | --- | --- |
-| GSM8K | in-distribution | ~no change |
-| MATH | moderate | modest gain |
-| OlympiadBench | severe | larger gain |
-| OmniMATH | extreme | largest gain |
+Three readings, in the order they matter:
 
-A flat or negative delta is a publishable finding too, and the analysis is written to report
-it honestly (see `docs/EXPERIMENTS.md`).
+**Relevance does nothing.** Random references cost as much as retrieved ones. C→B is +2.0
+with a 95% interval of [−5.5, +9.1], and −0.2 once pool-contaminated eval items are dropped
+from both arms. The pooled test has 48 discordant solutions splitting 26/22, so this is a
+measured null rather than a sample too small to see an effect.
 
----
+**Most of the loss is the labels, not the examples.** Each reference in Condition B ends
+with `Teacher's judgement: Math reasoning: <->, Consistency: <->`. Those two tokens are what
+the scoring rule compares at the mask positions to produce a verdict, and Condition B puts
+four of them in the user turn on every query. Removing that one line recovers 14.6 points
+(D→B, 95% CI [−22.0, −7.1], p < 0.0001).
 
-## What this repository does
+**The failure has a shape.** References move the grader's decision point about a step
+earlier: false alarms on clean solutions rise from 16.4% to 41.1%, exact-index accuracy
+collapses because the blame lands before the real break, and the only figure that improves
+is the miss rate. Condition D barely moves any of it.
 
-```
-                      ┌──────────────────────────────────────────┐
-  ProcessBench        │  Condition A (baseline)                  │
-  problem + steps ───▶│  PathFinder-PRM-7B, original prompt      │──▶ per-step verdicts
-                      └──────────────────────────────────────────┘
-                      ┌──────────────────────────────────────────┐
-                 ┌───▶│  Condition B (ours)                      │
-                 │    │  retrieve k refs → inject into the user  │──▶ per-step verdicts
-  retrieval pool │    │  turn → SAME frozen model, same tokens   │
-  (PathFinder-   │    └──────────────────────────────────────────┘
-   600K) ────────┘
-```
+![Conditions A, D, B and C by subset](docs/figures/arms.png)
 
-The **only** difference between A and B is extra reference text in the user message.
-Model weights, special tokens, decoding rule and scoring threshold are byte-identical —
-that is what makes the comparison clean.
+Condition A lands at 67.3 against the paper's published 69.5, which is the anchor that makes
+the rest worth reading. Measured at int4 on 50 solutions per subset; deltas between arms are
+valid because all arms ran at identical precision, absolute values are not comparable to
+bf16.
 
----
+**Full numbers, intervals, significance tests and limitations: [`docs/RESULTS.md`](docs/RESULTS.md).**
+The artefacts behind them: [`results/`](results/).
+
+## How the comparison is kept honest
+
+The finding rests on four arms differing by one thing each, so the machinery that enforces
+that is the important part of this repository.
+
+| Guard | What it prevents |
+| --- | --- |
+| `scripts/check_parity.py` | Two arms differing anywhere but their one defining key. An ablation must *declare* the key it varies. |
+| Stratified sampling | ProcessBench lists every erroneous solution first, so `--limit` draws a seeded, nested sample instead of slicing an all-error prefix. |
+| Contamination guard + exclusion | 59.6% of MATH appears verbatim in the retrieval pool. The guard filters neighbours; the exclusion recomputes every table without the affected eval items. |
+| Undefined ≠ zero | An absent population makes F1 undefined, and the metric says so instead of scoring it 0. This is what caught the sampling bug. |
+| Pooled contrasts | Per-subset McNemar runs out of discordant solutions at this scale; the pooled test does not. |
+| Frozen prompt contract | `<extra>` may never reach the user turn, the assistant turn must carry exactly two mask positions, and `scripts/verify_model_interface.py` re-checks both against the model card. |
 
 ## Quickstart
 
-### 0. Install
-
 ```bash
 python -m venv .venv
-.venv\Scripts\activate          # Windows
+.venv\Scripts\activate           # Windows; source .venv/bin/activate elsewhere
 pip install -r requirements.txt
 pip install -e .
 ```
 
-### 1. Prove the pipeline works — no GPU, no downloads, ~5 seconds
+**Check the plumbing** — no GPU, no downloads, about five seconds:
 
 ```bash
 python scripts/smoke.py
 pytest
 ```
 
-`smoke.py` runs the **entire** pipeline (pool → index → retrieval → prompt build →
-scoring → ProcessBench F1 → A-vs-B comparison) against a deterministic mock PRM and a tiny
-bundled fixture set. Use it to develop and to check your changes before spending GPU time.
-Its numbers are meaningless by construction; what it proves is that the plumbing is intact.
+`smoke.py` runs every stage against a mock PRM and bundled fixtures, and asserts that the
+control arm really is one: same reference count as the treatment, far lower similarity. Its
+numbers are meaningless by construction; what it proves is that the pipeline is intact.
 
-### 2. Verify the real model interface
+**Check the model contract** before trusting any real number:
 
 ```bash
 python scripts/verify_model_interface.py
 ```
 
-Reproduces the exact worked example from the PathFinder-PRM-7B model card and checks our
-adapter returns the same verdict. **Run this before trusting any real number.**
-
-### 3. Real experiment
+## Reproducing the study
 
 ```bash
-python scripts/build_pool.py         --config configs/retrieval.yaml  # download + parse pool
-python scripts/build_index.py        --config configs/retrieval.yaml  # SBERT -> PCA -> matrix
-python scripts/check_contamination.py --config configs/retrieval.yaml # READ THIS FIRST
-python scripts/run_eval.py           --config configs/baseline.yaml   # Condition A
-python scripts/run_eval.py           --config configs/retrieval.yaml  # Condition B
-python scripts/compare_runs.py --a runs/baseline --b runs/retrieval
+python scripts/build_pool.py          --config configs/retrieval.yaml
+python scripts/build_index.py         --config configs/retrieval.yaml
+python scripts/check_contamination.py --config configs/retrieval.yaml   # read this first
+
+python scripts/run_eval.py --config configs/pilot-int4.yaml           --limit 50  # A
+python scripts/run_eval.py --config configs/pilot-int4-retrieval.yaml --limit 50  # B
+python scripts/run_eval.py --config configs/pilot-int4-random.yaml    --limit 50  # C
+python scripts/run_eval.py --config configs/pilot-int4-nolabels.yaml  --limit 50  # D
+
+python scripts/compare_runs.py --a runs/int4-a --b runs/int4-b \
+    --out runs/comparison --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/int4-c --b runs/int4-b --out runs/comparison-c-vs-b
+python scripts/compare_runs.py --a runs/int4-d --b runs/int4-b --out runs/comparison-d-vs-b
+
+python scripts/plot_arms.py --out runs/comparison/arms.png \
+    --runs "A=runs/int4-a" "D=runs/int4-d" "B=runs/int4-b" "C=runs/int4-c"
+python scripts/error_analysis.py --runs A=runs/int4-a D=runs/int4-d B=runs/int4-b C=runs/int4-c
 ```
 
-`compare_runs.py` writes the report table, per-subset deltas, bootstrap CIs, a McNemar test
-and the OOD-trend plot into `runs/comparison/`.
+Runs are resumable: every solution is flushed to `predictions.jsonl` as it finishes, and
+`--resume` skips what is already there, so an interrupted run costs at most one solution.
 
-### Measured on the built pool: MATH is contaminated
+The `configs/pilot-int4-*.yaml` set is what produced the reported numbers on an 8 GB laptop.
+On a 24 GB or larger GPU use `configs/baseline.yaml`, `retrieval.yaml`,
+`control-random.yaml`, `ablation-nolabels.yaml` and `ablation-wordlabels.yaml` instead —
+same design at bf16, where absolute F1 becomes comparable to the published 69.5. Compare
+arms only within one precision; never an int4 number against a bf16 one.
 
-`check_contamination.py` on a 50K-item pool (15,316 unique questions):
+## Hardware
 
-| Subset | n | verbatim in pool | near-dup (cos ≥ 0.95) |
-| --- | ---: | ---: | ---: |
-| gsm8k | 400 | 0 (0.0%) | 0 |
-| **math** | 1000 | **596 (59.6%)** | 602 |
-| olympiadbench | 1000 | 0 (0.0%) | 4 |
-| omnimath | 1000 | 0 (0.0%) | 22 |
+Measured on an RTX 5070 Laptop, 8 GB VRAM. A 7B in bf16 needs ~15.2 GB of weights, so the
+reported run uses int4 weight-only quantisation via torchao.
 
-Nearly 60% of the MATH subset appears **verbatim** in PathFinder-600K; the other three are
-clean. The contamination guard drops these (it fired on 1,149 of 6,568 retrieval queries in
-a full pass), but the concentration matters: MATH is the "moderate OOD" cell of the
-evidence table, so an unguarded run would fake a trend out of memorisation. Lead with
-OlympiadBench and OmniMATH — uncontaminated *and* the most out-of-distribution.
-See `docs/EXPERIMENTS.md#controls`.
-
----
-
-## Hardware reality check
-
-Measured on this machine: **RTX 5070 Laptop, 8 GB VRAM, 15.3 GB system RAM**. A 7B model
-in bf16 needs ≈15.2 GB of weights.
-
-| Backend | `prm.backend` | Needs | Status here |
+| Backend | `prm.backend` | Needs | Notes |
 | --- | --- | --- | --- |
-| **int4 (torchao)** | `int4` | ≈6.3 GB VRAM | ✅ **use this** — fits, no offload, ~0.36 s/step |
-| Mock | `mock` | nothing | ✅ pipeline development only, numbers meaningless |
-| 4-bit NF4 | `hf4bit` | ≈5.5 GB VRAM + `bitsandbytes` | ❌ blocked — bitsandbytes' native library is refused by a Windows Application Control policy (`WinError 4551`) |
-| fp16 + offload | `hf` + `max_memory`/`offload_folder` | any VRAM + disk | ⚠️ works but ~12 s **per forward pass** — correctness pilots only |
-| bf16 | `hf` | 16 GB+ VRAM | ▶️ for numbers directly comparable to the paper |
+| int4 (torchao) | `int4` | ~6.3 GB VRAM | what produced these results; `lm_head` stays in bf16 |
+| bf16 | `hf` | 20 GB+ VRAM | for numbers comparable to the paper |
+| mock | `mock` | nothing | development only, numbers meaningless |
+| fp16 + offload | `hf` + `max_memory` | any VRAM + disk | ~12 s per forward pass; correctness pilots only |
 
-### Why int4 changes the project
+`int4_packing_format: tile_packed_to_4d` is the kernel that works on Blackwell (sm_120).
+`lm_head` and the embeddings stay in bf16 deliberately: the verdict *is* a comparison of the
+`<+>` and `<->` logits from that head, so quantising it would inject noise straight into the
+measured quantity.
 
-At bf16 the model needs ~15.2 GB. With 8 GB VRAM and ~6 GB free RAM the remainder streams
-from **disk on every forward pass**, which measured at ~12 s/pass — a ~150× penalty that
-put a full run at roughly 190 hours.
+Cost of the reported run, 200 solutions per arm: A 55 min, C 2 h 38 m, B 3 h 07 m,
+D 4 h 59 m. The reference-carrying arms are slower because their prompts are two to three
+times longer; retrieval itself is about 1% of step time.
 
-`prm.backend: int4` quantises weights to int4 with torchao during loading, so the whole
-model sits in VRAM at ~6.3 GB and nothing offloads. Measured end-to-end on real
-ProcessBench data (24 solutions per condition, all four subsets):
-
-| | disk offload (bf16) | int4 |
-| --- | ---: | ---: |
-| Condition A | ~100 s/solution | **5.4 s/solution** |
-| Condition B (retrieval) | — | **28.3 s/solution** |
-| full A+B run (3,400 each) | ~190 h | **~32 h** |
-
-Condition B is ~5× slower than A purely because retrieval makes prompts longer (mean 841
-tokens vs ~350). Profiling shows retrieval itself costs **71 ms/step — 1.2%**; the other
-98.8% is the model forward pass. So prompt length, not retrieval machinery, is the lever.
-
-If ~32 h is still too much, cut the sample rather than the method — `--limit 400` per
-subset is ~15 h and still detects the 6–13 point effects the source papers report.
-
-### Long runs are resumable — use it
-
-Model loading peaks host RAM, and on a 16 GB machine that is close enough to the edge that
-the OS may kill the process. Predictions are therefore appended to `predictions.jsonl` as
-each solution finishes, and `--resume` skips whatever is already there:
-
-```bash
-python scripts/run_eval.py --config configs/pilot-int4-retrieval.yaml --name int4-b
-# killed at hour 9? just re-run with --resume; at most one solution is lost
-python scripts/run_eval.py --config configs/pilot-int4-retrieval.yaml --name int4-b --resume
-```
-
-Close other applications before starting a long run. On a resumed run, `wall_seconds` in
-`summary.json` covers only the latest session — check `n_resumed` before quoting throughput.
-
-Two details that matter:
-
-- `int4_packing_format: tile_packed_to_4d` is the kernel that works on Blackwell (sm_120).
-  torchao's `plain` and `preshuffled` formats need the extra `mslk` package.
-- **`lm_head` and the embeddings stay in bf16.** Deliberate: PathFinder's verdict *is* a
-  comparison of the `<+>` and `<->` logits from `lm_head`, so quantising that head would
-  inject noise straight into the measured quantity.
-
-**Quantisation caveat, unchanged:** absolute F1 will not match the published 69.5. Deltas
-stay valid because A and B run at identical precision — never compare an int4 number to a
-bf16 one. State the backend beside every number.
-
-> **Caveat you must report.** PathFinder-PRM decides by comparing two logits (`<+>` vs `<->`).
-> 4-bit quantisation perturbs exactly those logits, so absolute F1 will not match the
-> published 69.5. That is acceptable here **because A and B use the identical backend** and
-> the claim is about the *delta*. State the backend in the report; never compare a 4-bit
-> number against the paper's bf16 number. See `docs/EXPERIMENTS.md#quantisation`.
-
----
-
-## Repository layout
+## Layout
 
 ```
-configs/            experiment configs (baseline / retrieval / smoke)
+configs/      one YAML per arm; int4 pilots and bf16 equivalents
 src/rapfprm/
-  data/             ProcessBench loading, retrieval-pool construction
-  retrieval/        SBERT encoder, PCA+cosine index, two-stage retriever
-  prm/              PRM backends + prompt builders (the frozen contract lives here)
-  eval/             ProcessBench runner and official metric
-  analysis/         A-vs-B comparison, significance tests, plots
-scripts/            CLI entry points (the five commands above)
-tests/              unit tests + end-to-end smoke test
-docs/               project plan, model-interface notes, experiment protocol
+  data/       ProcessBench loading and stratified sampling, retrieval-pool construction
+  retrieval/  SBERT encoder, PCA + cosine index, two-stage retriever, random control
+  prm/        PRM backends and prompt builders (the frozen contract lives here)
+  eval/       the scoring runner and the official ProcessBench metric
+  analysis/   contrasts, pooled tests, verdict profiling, figures
+scripts/      command-line entry points
+tests/        136 tests, including an end-to-end run on fixtures
+results/      the committed artefacts behind docs/RESULTS.md
+docs/         protocol, results, model-interface notes
 ```
 
 ## Documentation
 
-- `docs/MODEL_INTERFACE.md` — the exact frozen PathFinder-PRM contract and why it must not drift
-- `docs/EXPERIMENTS.md` — protocol, controls (incl. contamination guard), how to report results
+- [`docs/RESULTS.md`](docs/RESULTS.md) — what was found, with intervals and limitations
+- [`docs/EXPERIMENTS.md`](docs/EXPERIMENTS.md) — the protocol: arms, controls, sampling, what must be reported
+- [`docs/MODEL_INTERFACE.md`](docs/MODEL_INTERFACE.md) — the frozen PathFinder-PRM contract and why it must not drift
+- [`results/README.md`](results/README.md) — what each committed artefact is
+
+## Open questions
+
+- The token-level mechanism is a hypothesis. The labels cost 14.6 points; whether the
+  `<+>` / `<->` tokens specifically are the cause, rather than the extra line or the
+  judgement it carries, needs the word-rendered arm (`ablation-wordlabels.yaml`, unrun).
+- No bf16 arm. Every number here is int4.
+- 50 solutions per subset. The pooled contrasts are adequately powered; the per-subset rows
+  show shape, not significance.
+- The protocol's sensitivity checks — guard at 0.85 and 0.99, `top_k_steps: 4` — have not
+  been run.
 
 ## References
 

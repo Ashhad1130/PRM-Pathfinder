@@ -1,0 +1,54 @@
+{
+  "A": {
+    "n_solutions": 200,
+    "n_clean": 73,
+    "n_error": 127,
+    "false_alarm_rate": 0.1643835616438356,
+    "miss_rate": 0.10236220472440945,
+    "exact_rate": 0.6578947368421053,
+    "early_rate": 0.12280701754385964,
+    "late_rate": 0.21929824561403508,
+    "mean_index_offset": 0.3157894736842105,
+    "mean_steps_scored": 4.915,
+    "mean_steps_available": 7.325
+  },
+  "D": {
+    "n_solutions": 200,
+    "n_clean": 73,
+    "n_error": 127,
+    "false_alarm_rate": 0.2602739726027397,
+    "miss_rate": 0.11023622047244094,
+    "exact_rate": 0.6283185840707964,
+    "early_rate": 0.1592920353982301,
+    "late_rate": 0.21238938053097345,
+    "mean_index_offset": 0.11504424778761062,
+    "mean_steps_scored": 4.615,
+    "mean_steps_available": 7.325
+  },
+  "B": {
+    "n_solutions": 200,
+    "n_clean": 73,
+    "n_error": 127,
+    "false_alarm_rate": 0.410958904109589,
+    "miss_rate": 0.07086614173228346,
+    "exact_rate": 0.423728813559322,
+    "early_rate": 0.4152542372881356,
+    "late_rate": 0.16101694915254236,
+    "mean_index_offset": -0.8983050847457628,
+    "mean_steps_scored": 3.675,
+    "mean_steps_available": 7.325
+  },
+  "C": {
+    "n_solutions": 200,
+    "n_clean": 73,
+    "n_error": 127,
+    "false_alarm_rate": 0.3972602739726027,
+    "miss_rate": 0.07874015748031496,
+    "exact_rate": 0.38461538461538464,
+    "early_rate": 0.49572649572649574,
+    "late_rate": 0.11965811965811966,
+    "mean_index_offset": -1.0256410256410255,
+    "mean_steps_scored": 3.66,
+    "mean_steps_available": 7.325
+  }
+}

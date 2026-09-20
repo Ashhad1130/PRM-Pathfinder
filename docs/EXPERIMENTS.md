@@ -1,17 +1,45 @@
 # Experiment protocol
 
+Measured outcomes live in [RESULTS.md](RESULTS.md). This file is the protocol: what
+gets run, what is held fixed, and what has to be reported alongside a number.
+
 ## The comparison
 
-| | Condition A | Condition B |
-| --- | --- | --- |
-| Model | PathFinder-PRM-7B, frozen | PathFinder-PRM-7B, frozen (same weights) |
-| Prompt | model card, unmodified | + retrieved references in the **user turn only** |
-| Assistant turn | `... Math reasoning: <extra>, Consistency: <extra>` | byte-identical |
-| Threshold | 0.5 | 0.5 |
-| Data | ProcessBench, 4 subsets | identical solutions, identical order |
+| | Condition A | Condition B | Condition C (control) | Condition D (ablation) |
+| --- | --- | --- | --- | --- |
+| Model | PathFinder-PRM-7B, frozen | same weights | same weights | same weights |
+| Prompt | model card, unmodified | + **retrieved** references | + **randomly drawn** references | + **retrieved** references, **labels stripped** |
+| References per step | 0 | `top_k_steps` | the same `top_k_steps` | the same `top_k_steps` |
+| Gold labels shown | — | yes, as `<+>`/`<->` | yes, as `<+>`/`<->` | **no** |
+| Assistant turn | `... Math reasoning: <extra>, Consistency: <extra>` | byte-identical | byte-identical | byte-identical |
+| Threshold | 0.5 | 0.5 | 0.5 | 0.5 |
+| Data | ProcessBench, 4 subsets | identical solutions and order | identical solutions and order | identical solutions and order |
+| Config | `baseline.yaml` | `retrieval.yaml` | `control-random.yaml` | `pilot-int4-nolabels.yaml` |
 
-Exactly one thing varies. Keep it that way: if you change `prm.*` in one config, change it
-in the other, or the delta stops measuring retrieval.
+Exactly one thing varies between any two of them: `retrieval.enabled` for A vs B,
+`retrieval.reference_mode` for B vs C. Keep it that way — if you change `prm.*` in one
+config, change it in all of them, or the delta stops measuring retrieval.
+`scripts/check_parity.py` enforces this before a run starts; `tests/test_pipeline.py`
+enforces it in CI.
+
+An ablation varies a key outside the retrieval block, so it has to *declare* that key:
+
+```bash
+python scripts/check_parity.py configs/pilot-int4-retrieval.yaml \
+    configs/pilot-int4-nolabels.yaml --allow prompt.include_reference_labels
+```
+
+Anything the ablation does not name is still refused. That keeps a declared ablation and an
+accidental config drift from looking identical at the command line.
+
+Condition C is what makes B interpretable: B's prompts are longer than A's, so without a
+length-matched control, "retrieval helps" and "more text helps" are the same number. See
+[Condition C](#4-condition-c--the-random-reference-control).
+
+Condition D then splits the reference *text* from the reference *labels*, which B renders as
+the model's own `<+>`/`<->` verdict tokens. It is an ablation rather than an arm of the main
+comparison, so it declares the key it varies at the parity gate. On the run reported in
+[RESULTS.md](RESULTS.md) it carries most of the measured effect.
 
 ## Metric
 
@@ -26,6 +54,43 @@ The harmonic mean is what makes the benchmark adversarial: a grader that flags e
 scores `error_acc = 1.0`, `correct_acc = 0.0`, F1 = 0. Published anchors, average F1 across
 the four subsets: RetrievalPRM-7B **65.8**, PathFinder-PRM-7B **69.5**.
 
+### Report the pooled contrast, not just the four subset rows
+
+Per-subset McNemar tests run out of *discordant* solutions long before they run out of
+solutions. At 50 per subset a contrast typically produces 10-20 disagreements, under the ~25
+the normal approximation needs, so every per-subset p-value on a pilot is decoration.
+
+`compare_runs.py` therefore also reports an `overall` block: a bootstrap interval for the
+macro-average delta (resampled within subsets, since the average is a mean of four F1s) and
+a McNemar test pooled over every paired solution. On the 200-solution run those pooled tests
+carry 42-61 discordant solutions and clear the reliability bar, which is what allows the
+relevance contrast to be reported as a measured null rather than as insufficient data.
+
+### Sampling: `--limit` draws, it does not slice
+
+ProcessBench lists **every erroneous solution before the first clean one**. A prefix is
+therefore not a sample of the subset, it is the error half of it:
+
+| | gsm8k | math | olympiadbench | omnimath |
+| --- | ---: | ---: | ---: | ---: |
+| full subset (error / clean) | 207 / 193 | 594 / 406 | 661 / 339 | 759 / 241 |
+| first 100 rows | 100 / 0 | 100 / 0 | 100 / 0 | 100 / 0 |
+| first 400 rows | 207 / 193 | 400 / 0 | 400 / 0 | 400 / 0 |
+
+With no clean solutions, `correct_acc` is undefined and so is F1 — the metric says so
+rather than scoring the missing population as zero, which is how this was caught after a
+92-minute run produced four undefined subsets.
+
+`data/processbench.py::subsample` therefore takes a **stratified** sample: both populations
+are drawn at the subset's own rate, so `--limit 100` gives 52/48 on gsm8k and 76/24 on
+omnimath, matching the real balance. Two properties make it safe for this experiment:
+
+- **Seeded** (`data.sample_seed`, default 17) — every arm loading the same subset, limit and
+  seed gets the identical solutions, which is what makes A, B and C paired. The parity
+  checker treats `sample_seed` as a locked key for that reason.
+- **Nested** — the limit-50 sample sits inside the limit-100 sample, so a run can be grown
+  (or reported at a smaller size) and `--resume` reuses every solution already scored.
+
 ## Controls
 
 ### 1. Contamination guard (mandatory)
@@ -35,10 +100,15 @@ the four subsets: RetrievalPRM-7B **65.8**, PathFinder-PRM-7B **69.5**.
 | Subset | n | verbatim in pool | near-duplicate (cos ≥ 0.95) |
 | --- | ---: | ---: | ---: |
 | gsm8k | 400 | 0 (0.0%) | 0 |
-| **math** | 1000 | **596 (59.6%)** | **602** |
+| **math** | 1000 | **596 (59.6%)** | **605** |
 | olympiadbench | 1000 | 0 (0.0%) | 4 |
-| omnimath | 1000 | 0 (0.0%) | 22 |
-| **total** | 3400 | **596 (17.5%)** | 628 |
+| omnimath | 1000 | 0 (0.0%) | 24 |
+| **total** | 3400 | **596 (17.5%)** | 633 |
+
+Every verbatim match is also a near-duplicate (cosine 1.0), so 633 is the union — the
+number of eval solutions `--exclude-contaminated` removes. The near-dup column shifts by a
+few items between encoder runs because those items sit on the 0.95 threshold itself; the
+verbatim column is exact.
 
 Reproduce with `python scripts/check_contamination.py --config configs/retrieval.yaml`.
 
@@ -75,6 +145,33 @@ where overlap is most likely, and a zero suggests the guard is not firing.
 Sensitivity check worth running: re-run Condition B at `max_question_similarity: 0.85` and
 `0.99`. If the gain vanishes at 0.85 but is large at 0.99, the gain was contamination.
 
+#### The guard filters neighbours, not eval items — so also report the filtered table
+
+There is a second-order effect the guard cannot remove, and it has to be named in the
+report. The guard drops a contaminated question's *neighbours*; the question itself is
+still graded. So on MATH, where 59.6% of questions have a verbatim pool copy, Condition B
+meets those items with its rank-2+ references while a clean OlympiadBench item gets its
+true top-1. The two subsets are not receiving the same treatment, and the headline table
+cannot show that.
+
+The fix is to recompute the comparison with the flagged eval solutions removed from **both**
+conditions. `check_contamination.py` records their uids, and `compare_runs.py` consumes them:
+
+```bash
+python scripts/check_contamination.py --config configs/retrieval.yaml   # writes flagged_uids
+python scripts/compare_runs.py --a runs/baseline --b runs/retrieval \
+    --exclude-contaminated runs/contamination.json
+```
+
+That writes a second set of artefacts alongside the first, prefixed `uncontaminated-`, with
+the exclusion and the surviving `n` stated in the table header so the two can never be
+confused. Report both: the full table is the benchmark as published, the filtered one is
+the benchmark without the asymmetry. Where they disagree, the filtered table is the one
+that supports a claim about the mechanism.
+
+Pass the flag on every contrast, including the control ones. The committed tables in
+`results/` all carry their `uncontaminated-` twin for exactly this reason.
+
 ### 2. Baseline fidelity
 
 Condition A at bf16 should land near the published 69.5 average F1. It is the anchor for
@@ -88,13 +185,47 @@ Each isolates one part of the mechanism. Run on a subset if compute is tight.
 | Ablation | Config change | Question it answers |
 | --- | --- | --- |
 | No step-level stage | `retrieval.step_level: false` | Does stage 2 (reasoning-style shift) matter, or is question-level retrieval enough? |
-| Unlabelled references | `prompt.include_reference_labels: false` | Is the gain from the *examples* or from the *labels*? |
+| Unlabelled references | `configs/pilot-int4-nolabels.yaml` | Is the effect from the *examples* or from the `<+>`/`<->` verdict tokens the labels render? **Run; see RESULTS.md.** |
 | More references | `retrieval.top_k_steps: 4` | Does more context help or just add noise? |
-| Random references | see note below | Is it retrieval, or just having any extra text? |
+| Random references | `retrieval.reference_mode: random` | Is it retrieval, or just having any extra text? **Not an optional ablation — see below.** |
 
-The random-reference control is the strongest of the four and worth the compute: replace
-the ranking with a random draw from the pool. If random references help as much as similar
-ones, the effect is prompt length, not retrieval.
+### 4. Condition C — the random-reference control
+
+Condition B's prompts are ~841 tokens against Condition A's ~350. So a gain in B has two
+possible causes, and the headline table cannot tell them apart:
+
+1. the references are **relevant** — the mechanism the project claims;
+2. the prompt is simply **longer** — more context, any context.
+
+Condition C separates them. `configs/control-random.yaml` is Condition B with
+`retrieval.reference_mode: random`: references are drawn uniformly from the pool instead of
+ranked, and *everything else is identical* — the same number of references, the same
+rendering, the same contamination guard, the same prompt budget. Only relevance is gone.
+
+```bash
+python scripts/run_eval.py --config configs/control-random.yaml     # Condition C
+python scripts/compare_runs.py --a runs/baseline       --b runs/control-random  # A -> C
+python scripts/compare_runs.py --a runs/control-random --b runs/retrieval       # C -> B
+```
+
+| Contrast | Isolates | Reading |
+| --- | --- | --- |
+| A → B | everything retrieval adds | the headline delta, and on its own uninterpretable |
+| A → C | extra context alone | a gain here is about prompt length, not retrieval |
+| **C → B** | **relevance, prompt length held fixed** | **this is the number the hypothesis actually rests on** |
+
+If C → B is flat, the honest headline is that the gain was context, not retrieval — no
+matter how good A → B looks. Report all three contrasts, always, and in that order.
+
+**Check the control really was one.** `summary.json` records
+`retrieval.mean_step_similarity` for both arms; C's must sit far below B's. If they are
+close, the pool is small or homogeneous enough that a random draw is a similar draw, and
+the control is not controlling anything. `scripts/smoke.py` asserts both halves of this
+(same reference count, lower similarity) on fixture data before you spend GPU hours.
+
+Cost: Condition C is a retrieval-length run, so budget it at roughly the same as B. Skipping
+it is possible and occasionally necessary, but then the report has to say plainly that the
+headline gain has no control behind it.
 
 ## Quantisation
 
@@ -157,11 +288,17 @@ verdicts, raise `int4_group_size` accuracy by lowering it to 32, or fall back to
 python scripts/smoke.py                                        # plumbing
 python scripts/verify_model_interface.py                       # prompt parity
 python scripts/verify_model_interface.py --load-model          # real forward pass
-python scripts/run_eval.py --config configs/baseline.yaml  --limit 25 --name pilot-a
-python scripts/run_eval.py --config configs/retrieval.yaml --limit 25 --name pilot-b
+python scripts/run_eval.py --config configs/baseline.yaml      --limit 25 --name pilot-a
+python scripts/run_eval.py --config configs/retrieval.yaml     --limit 25 --name pilot-b
+python scripts/run_eval.py --config configs/control-random.yaml --limit 25 --name pilot-c
 python scripts/compare_runs.py --a runs/pilot-a --b runs/pilot-b
+python scripts/compare_runs.py --a runs/pilot-c --b runs/pilot-b   # the relevance contrast
 # only then, the full runs
 ```
+
+Check parity between every pair before spending GPU time. `scripts/check_parity.py` refuses
+a pair differing in anything but `retrieval.enabled` / `reference_mode`, and an ablation has
+to declare the key it varies.
 
 ## Reading the result honestly
 
@@ -178,6 +315,11 @@ Four outcomes, all reportable:
 | Δ positive but flat across subsets | Retrieval helps, but *not* by fixing distribution shift — a different story from RetrievalPRM's. Say so. |
 | Δ ≈ 0 | Retrieval's benefit does not transfer from binary grading to error typing. A clean negative result; the pitch already commits to reporting it. |
 | Δ negative | References distract the classifier. Check prompt length effects and the random-reference control before concluding. |
+
+Whichever row you land in, the claim is only as strong as the **C → B** contrast behind it
+and the `uncontaminated-` table beside it. A positive A → B with a flat C → B is a result
+about prompt length; a positive A → B that disappears once contaminated items are dropped
+is a result about memorisation.
 
 Two guards against fooling yourself:
 
