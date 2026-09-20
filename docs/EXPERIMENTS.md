@@ -18,14 +18,14 @@ gets run, what is held fixed, and what has to be reported alongside a number.
 
 Exactly one thing varies between any two of them: `retrieval.enabled` for A vs B,
 `retrieval.reference_mode` for B vs C. Keep it that way — if you change `prm.*` in one
-config, change it in all of them, or the delta stops measuring retrieval. The Lightning
-driver enforces this before it starts
-(`scripts/lightning/_check_parity.py`); `tests/test_pipeline.py` enforces it in CI.
+config, change it in all of them, or the delta stops measuring retrieval.
+`scripts/check_parity.py` enforces this before a run starts; `tests/test_pipeline.py`
+enforces it in CI.
 
 An ablation varies a key outside the retrieval block, so it has to *declare* that key:
 
 ```bash
-python scripts/lightning/_check_parity.py configs/pilot-int4-retrieval.yaml \
+python scripts/check_parity.py configs/pilot-int4-retrieval.yaml \
     configs/pilot-int4-nolabels.yaml --allow prompt.include_reference_labels
 ```
 
@@ -169,8 +169,8 @@ confused. Report both: the full table is the benchmark as published, the filtere
 the benchmark without the asymmetry. Where they disagree, the filtered table is the one
 that supports a claim about the mechanism.
 
-The Lightning driver passes the flag automatically whenever `runs/contamination.json`
-exists, for every contrast including the control ones.
+Pass the flag on every contrast, including the control ones. The committed tables in
+`results/` all carry their `uncontaminated-` twin for exactly this reason.
 
 ### 2. Baseline fidelity
 
@@ -223,9 +223,9 @@ close, the pool is small or homogeneous enough that a random draw is a similar d
 the control is not controlling anything. `scripts/smoke.py` asserts both halves of this
 (same reference count, lower similarity) on fixture data before you spend GPU hours.
 
-Cost: Condition C is a retrieval-length run, so budget it at roughly the same as B. On the
-Lightning driver it is a default stage; `--no-control` skips it, and then the report has to
-say that the headline gain has no control behind it.
+Cost: Condition C is a retrieval-length run, so budget it at roughly the same as B. Skipping
+it is possible and occasionally necessary, but then the report has to say plainly that the
+headline gain has no control behind it.
 
 ## Quantisation
 
@@ -296,9 +296,9 @@ python scripts/compare_runs.py --a runs/pilot-c --b runs/pilot-b   # the relevan
 # only then, the full runs
 ```
 
-On a Linux GPU box the whole sequence, all three arms included, is one command —
-`bash scripts/lightning/run_experiment.sh` (see `docs/LIGHTNING.md`). It refuses to start
-if the arms' configs differ in anything but `retrieval.enabled` / `reference_mode`.
+Check parity between every pair before spending GPU time. `scripts/check_parity.py` refuses
+a pair differing in anything but `retrieval.enabled` / `reference_mode`, and an ablation has
+to declare the key it varies.
 
 ## Reading the result honestly
 

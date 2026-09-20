@@ -1,6 +1,6 @@
 """Print the whole study on one screen once every arm has finished.
 
-    python scripts/lightning/_summary.py runs A B C D E
+    python scripts/summarize_study.py runs A B C D E
 
 Reads each arm's metrics.json and each contrast's comparison.json and prints the average
 F1 per arm followed by every contrast with its pooled interval. Anything missing is
@@ -92,7 +92,7 @@ def contrast_lines(out_dir: Path) -> None:
 
 def main() -> None:
     if len(sys.argv) < 3:
-        raise SystemExit("usage: _summary.py <out_dir> <arm> [<arm> ...]")
+        raise SystemExit("usage: summarize_study.py <out_dir> <arm> [<arm> ...]")
     out_dir = Path(sys.argv[1])
     arms = sys.argv[2:]
 

@@ -225,24 +225,24 @@ full-benchmark run on a laptop.
 ## Reproducing
 
 ```bash
-bash scripts/lightning/run_experiment.sh \
-    --config-a configs/pilot-int4.yaml \
-    --config-b configs/pilot-int4-retrieval.yaml \
-    --config-c configs/pilot-int4-random.yaml \
-    --limit 50 --stages a,b,c,compare
+python scripts/build_pool.py          --config configs/retrieval.yaml
+python scripts/build_index.py         --config configs/retrieval.yaml
+python scripts/check_contamination.py --config configs/retrieval.yaml
 
-python scripts/run_eval.py --config configs/pilot-int4-nolabels.yaml --limit 50
-python scripts/compare_runs.py --a runs/int4-a --b runs/int4-d \
-    --out runs/comparison-a-vs-nolabels --exclude-contaminated runs/contamination.json
-python scripts/compare_runs.py --a runs/int4-d --b runs/int4-b \
-    --out runs/comparison-nolabels-vs-b --exclude-contaminated runs/contamination.json
+for cfg in pilot-int4 pilot-int4-retrieval pilot-int4-random pilot-int4-nolabels; do
+    python scripts/run_eval.py --config "configs/$cfg.yaml" --limit 50 --resume
+done
 
-python scripts/plot_arms.py --out runs/comparison/arms.png \
-    --runs "A: no refs=runs/int4-a" "D: refs, no labels=runs/int4-d" \
-           "B: refs + labels=runs/int4-b" "C: random refs + labels=runs/int4-c"
-python scripts/error_analysis.py \
-    --runs A=runs/int4-a D=runs/int4-d B=runs/int4-b C=runs/int4-c \
-    --similarity-bins runs/int4-b runs/int4-a
+python scripts/compare_runs.py --a runs/int4-a --b runs/int4-b     --out runs/comparison --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/int4-a --b runs/int4-c     --out runs/comparison-a-vs-control --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/int4-c --b runs/int4-b     --out runs/comparison-control-vs-b --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/int4-a --b runs/int4-d     --out runs/comparison-a-vs-nolabels --exclude-contaminated runs/contamination.json
+python scripts/compare_runs.py --a runs/int4-d --b runs/int4-b     --out runs/comparison-nolabels-vs-b --exclude-contaminated runs/contamination.json
+
+python scripts/plot_arms.py --out runs/comparison/arms.png     --runs "A: no refs=runs/int4-a" "D: refs, no labels=runs/int4-d"            "B: refs + labels=runs/int4-b" "C: random refs + labels=runs/int4-c"
+python scripts/error_analysis.py     --runs A=runs/int4-a D=runs/int4-d B=runs/int4-b C=runs/int4-c     --similarity-bins runs/int4-b runs/int4-a
 ```
 
-Numbers, intervals and tests live in `runs/comparison*/`, each with an `uncontaminated-` twin.
+The artefacts these numbers come from are committed under [`../results/`](../results/):
+one directory per arm with its resolved config, predictions and traces, one per contrast
+with its table and its `uncontaminated-` twin.

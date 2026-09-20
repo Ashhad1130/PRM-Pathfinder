@@ -1,14 +1,14 @@
 """Refuse to start a run whose two conditions differ in more than the arm-defining key.
 
-    python scripts/lightning/_check_parity.py configs/baseline.yaml configs/retrieval.yaml
-    python scripts/lightning/_check_parity.py configs/retrieval.yaml configs/control-random.yaml
-    python scripts/lightning/_check_parity.py A.yaml B.yaml --backend int4 --limit 400
+    python scripts/check_parity.py configs/baseline.yaml configs/retrieval.yaml
+    python scripts/check_parity.py configs/retrieval.yaml configs/control-random.yaml
+    python scripts/check_parity.py A.yaml B.yaml --backend int4 --limit 400
 
 The comparison only means "retrieval helps" if retrieval is the only thing that changed
 (docs/EXPERIMENTS.md). A drifted `prm.max_input_tokens`, a different `limit_per_subset` or
 a `top_k_steps` that moved in one arm and not the other would make the delta a config
 artefact — and you would not find out until after the GPU hours were spent. Exit code 1
-stops the driver before that happens.
+stops you before that happens.
 
 Exactly two retrieval keys may differ, because each one defines an arm:
 
@@ -28,7 +28,7 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from rapfprm.config import load_config  # noqa: E402
 

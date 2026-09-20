@@ -415,7 +415,7 @@ def run_parity(*args):
     import sys
 
     return subprocess.run(
-        [sys.executable, "scripts/lightning/_check_parity.py", *args],
+        [sys.executable, "scripts/check_parity.py", *args],
         capture_output=True,
         text=True,
     )
@@ -509,7 +509,7 @@ def test_summary_maps_every_arm_to_a_real_config():
     import importlib.util
 
     spec = importlib.util.spec_from_file_location(
-        "_summary", "scripts/lightning/_summary.py"
+        "summarize_study", "scripts/summarize_study.py"
     )
     summary = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(summary)
