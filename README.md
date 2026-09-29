@@ -24,47 +24,55 @@ prompt contract held byte-identical across conditions.
 
 ## The answer
 
-**No. Retrieval buys nothing here, and most of the damage it appears to cause comes from
-something else entirely.**
+**No. Retrieval does not help, and most of the damage comes from how the references' labels
+are written.**
 
 | | references shown | average F1 | vs A |
 | --- | --- | ---: | ---: |
 | **A** baseline | none | **67.3** | |
+| **E** ablation | retrieved, labels as words | 62.9 | −4.4 |
 | **D** ablation | retrieved, labels stripped | 60.9 | −6.5 |
-| **B** treatment | retrieved, labels as `<+>` / `<->` | 46.3 | −21.0 |
+| **B** treatment | retrieved, labels as `<+>` / `<->` | 50.0 | −17.3 |
 | **C** control | **random**, labels as `<+>` / `<->` | 44.3 | −23.0 |
 
 Three readings, in the order they matter:
 
-**Relevance does nothing.** Random references cost as much as retrieved ones. C→B is +2.0
-with a 95% interval of [−5.5, +9.1], and −0.2 once pool-contaminated eval items are dropped
-from both arms. The pooled test has 48 discordant solutions splitting 26/22, so this is a
-measured null rather than a sample too small to see an effect.
-
-**Most of the loss is the labels, not the examples.** Each reference in Condition B ends
+**The verdict tokens do the damage, not the judgement.** Each reference in Condition B ends
 with `Teacher's judgement: Math reasoning: <->, Consistency: <->`. Those two tokens are what
-the scoring rule compares at the mask positions to produce a verdict, and Condition B puts
-four of them in the user turn on every query. Removing that one line recovers 14.6 points
-(D→B, 95% CI [−22.0, −7.1], p < 0.0001).
+the scoring rule compares at the mask positions, and B puts four of them in the user turn on
+every query. Writing the identical judgement as *correct* / *incorrect* (E) recovers 12.9
+points (E→B, 95% CI [−19.0, −7.7], p < 0.0001) and is indistinguishable from showing no
+label at all (D→E +2.0, [−2.2, +6.4]).
 
-**The failure has a shape.** References move the grader's decision point about a step
-earlier: false alarms on clean solutions rise from 16.4% to 41.1%, exact-index accuracy
-collapses because the blame lands before the real break, and the only figure that improves
-is the miss rate. Condition D barely moves any of it.
+**Relevance helps a little, and only where RetrievalPRM says it should.** C→B is +5.8
+([−1.1, +12.8], p = 0.10) on average, +2.3 once pool-contaminated items are dropped. It is
+~0 on GSM8K and MATH and +14.4 / +11.6 on OlympiadBench and Omni-MATH, the hardest and
+uncontaminated subsets. Suggestive, not established, and never enough to offset the loss.
 
-![Conditions A, D, B and C by subset](docs/figures/arms.png)
+**The failure has a shape, and it is not in the error typing.** Stage 1 (math / consistency)
+does not measurably change in any arm. The verdict tokens depress stage 2's correctness score
+instead: false alarms on clean solutions rise from 16.4% to 34.2%, the blame lands before the
+real error, and the only figure that improves is the miss rate. D and E barely move any of it.
+
+![Conditions A, D, E, B and C by subset](docs/figures/arms.png)
 
 Condition A lands at 67.3 against the paper's published 69.5, which is the anchor that makes
 the rest worth reading. Measured at int4 on 50 solutions per subset; deltas between arms are
 valid because all arms ran at identical precision, absolute values are not comparable to
 bf16.
 
+> **Correction.** The first run of B (46.3) silently used a fallback encoder that skipped
+> Sentence-BERT's normalisation step, which degraded retrieval. It was caught because E's
+> references did not match B's, fixed in `retrieval/encoder.py` with a regression test, and B
+> was re-run. C draws random references and was verified unaffected. The degraded run is kept
+> in `results/int4-b-fallback-encoder/` for the record.
+
 **Full numbers, intervals, significance tests and limitations: [`docs/RESULTS.md`](docs/RESULTS.md).**
 The artefacts behind them: [`results/`](results/).
 
 ## How the comparison is kept honest
 
-The finding rests on four arms differing by one thing each, so the machinery that enforces
+The finding rests on five arms differing by one thing each, so the machinery that enforces
 that is the important part of this repository.
 
 | Guard | What it prevents |
@@ -113,16 +121,14 @@ python scripts/run_eval.py --config configs/pilot-int4.yaml           --limit 50
 python scripts/run_eval.py --config configs/pilot-int4-retrieval.yaml --limit 50  # B
 python scripts/run_eval.py --config configs/pilot-int4-random.yaml    --limit 50  # C
 python scripts/run_eval.py --config configs/pilot-int4-nolabels.yaml  --limit 50  # D
+python scripts/run_eval.py --config configs/pilot-int4-wordlabels.yaml --limit 50 # E
 
-python scripts/compare_runs.py --a runs/int4-a --b runs/int4-b \
-    --out runs/comparison --exclude-contaminated runs/contamination.json
-python scripts/compare_runs.py --a runs/int4-c --b runs/int4-b --out runs/comparison-c-vs-b
-python scripts/compare_runs.py --a runs/int4-d --b runs/int4-b --out runs/comparison-d-vs-b
-
-python scripts/plot_arms.py --out runs/comparison/arms.png \
-    --runs "A=runs/int4-a" "D=runs/int4-d" "B=runs/int4-b" "C=runs/int4-c"
-python scripts/error_analysis.py --runs A=runs/int4-a D=runs/int4-d B=runs/int4-b C=runs/int4-c
+# copy the five run directories into results/, then every contrast, profile and figure:
+python report/collect_numbers.py
 ```
+
+`report/collect_numbers.py` runs all eight contrasts (each with its `uncontaminated-` twin),
+the verdict profile, the arm figure and the step-level stage analysis behind the report.
 
 Runs are resumable: every solution is flushed to `predictions.jsonl` as it finishes, and
 `--resume` skips what is already there, so an interrupted run costs at most one solution.
@@ -150,8 +156,8 @@ reported run uses int4 weight-only quantisation via torchao.
 `<+>` and `<->` logits from that head, so quantising it would inject noise straight into the
 measured quantity.
 
-Cost of the reported run, 200 solutions per arm: A 55 min, C 2 h 38 m, B 3 h 07 m,
-D 4 h 59 m. The reference-carrying arms are slower because their prompts are two to three
+Cost of the reported run, 200 solutions per arm: A 55 min, C 2 h 38 m, B 3 h 01 m,
+D 4 h 59 m, E about 5 h 35 m. The reference-carrying arms are slower because their prompts are two to three
 times longer; retrieval itself is about 1% of step time.
 
 ## Layout
@@ -165,9 +171,10 @@ src/rapfprm/
   eval/       the scoring runner and the official ProcessBench metric
   analysis/   contrasts, pooled tests, verdict profiling, figures
 scripts/      command-line entry points
-tests/        136 tests, including an end-to-end run on fixtures
+tests/        139 tests, including an end-to-end run on fixtures
 results/      the committed artefacts behind docs/RESULTS.md
 docs/         protocol, results, model-interface notes
+report/       the ACL-format seminar report (main.tex, main.pdf) and its analysis scripts
 ```
 
 ## Documentation
@@ -179,9 +186,11 @@ docs/         protocol, results, model-interface notes
 
 ## Open questions
 
-- The token-level mechanism is a hypothesis. The labels cost 14.6 points; whether the
-  `<+>` / `<->` tokens specifically are the cause, rather than the extra line or the
-  judgement it carries, needs the word-rendered arm (`ablation-wordlabels.yaml`, unrun).
+- Why the verdict tokens depress stage 2 and not stage 1 is still a hypothesis
+  (calibration of the one soft decision), not a tested mechanism.
+- Whether relevance really helps on the hardest subsets needs the full benchmark; at 50
+  solutions per subset the per-subset intervals barely clear zero.
+- Error-type *accuracy* is unmeasured: ProcessBench has no gold error types.
 - No bf16 arm. Every number here is int4.
 - 50 solutions per subset. The pooled contrasts are adequately powered; the per-subset rows
   show shape, not significance.
