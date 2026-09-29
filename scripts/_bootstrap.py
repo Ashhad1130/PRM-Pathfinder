@@ -22,9 +22,10 @@ if str(SRC) not in sys.path:
 os.chdir(PROJECT_ROOT)
 
 # Must run before anything imports sklearn/transformers. No-op on a healthy machine.
-from rapfprm.compat import neutralise_broken_pyarrow  # noqa: E402
+from rapfprm.compat import hide_unusable_datasets, neutralise_broken_pyarrow  # noqa: E402
 
 neutralise_broken_pyarrow()
+hide_unusable_datasets()
 
 
 def setup_logging(verbose: bool = False) -> None:

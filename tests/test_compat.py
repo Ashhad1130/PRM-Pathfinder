@@ -94,3 +94,68 @@ def test_probe_is_a_noop_when_pyarrow_is_healthy_or_absent():
     # Whether healthy or absent, the non-forced call must decline to install the shim.
     assert neutralise_broken_pyarrow() is False
     assert healthy in (True, False)
+
+
+# --- the partial-failure shape: pyarrow loads, its Parquet extension does not -----------
+
+import subprocess  # noqa: E402
+import textwrap  # noqa: E402
+from pathlib import Path  # noqa: E402
+
+SRC = Path(__file__).resolve().parents[1] / "src"
+
+
+def _run_isolated(code: str) -> subprocess.CompletedProcess:
+    """The datasets shim patches process-wide import state, so test it in a fresh process."""
+    prelude = f"import sys; sys.path.insert(0, {str(SRC)!r})\n"
+    return subprocess.run(
+        [sys.executable, "-c", prelude + textwrap.dedent(code)],
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+
+def test_hidden_datasets_reports_as_uninstalled_and_unimportable():
+    result = _run_isolated(
+        """
+        import importlib.metadata as md, importlib.util
+        from rapfprm.compat import hide_unusable_datasets
+        assert hide_unusable_datasets(force=True) is True
+        assert hide_unusable_datasets(force=True) is False   # not installed twice
+        try:
+            md.metadata("datasets")
+            raise SystemExit("metadata still visible")
+        except md.PackageNotFoundError:
+            pass
+        assert importlib.util.find_spec("datasets") is None
+        try:
+            import datasets  # noqa: F401
+            raise SystemExit("import still works")
+        except ImportError:
+            pass
+        md.metadata("numpy")   # other packages are untouched
+        print("ok")
+        """
+    )
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.strip().endswith("ok")
+
+
+def test_datasets_probe_is_a_noop_when_parquet_loads():
+    result = _run_isolated(
+        """
+        import importlib
+        try:
+            importlib.import_module("pyarrow._dataset_parquet")
+        except ImportError:
+            print("skip")
+            raise SystemExit(0)
+        from rapfprm.compat import hide_unusable_datasets
+        assert hide_unusable_datasets() is False
+        print("ok")
+        """
+    )
+    assert result.returncode == 0, result.stderr
+    if result.stdout.strip().endswith("skip"):
+        pytest.skip("pyarrow's Parquet extension is blocked here; the probe path is exercised")
