@@ -6,8 +6,8 @@
       "n_error": 26,
       "n_correct": 24,
       "error_acc": 0.4230769230769231,
-      "correct_acc": 0.7916666666666666,
-      "f1": 0.5514511873350924,
+      "correct_acc": 0.75,
+      "f1": 0.540983606557377,
       "well_defined": true
     },
     "math": {
@@ -15,9 +15,9 @@
       "n": 50,
       "n_error": 30,
       "n_correct": 20,
-      "error_acc": 0.43333333333333335,
-      "correct_acc": 0.6,
-      "f1": 0.503225806451613,
+      "error_acc": 0.5333333333333333,
+      "correct_acc": 0.5,
+      "f1": 0.5161290322580646,
       "well_defined": true
     },
     "olympiadbench": {
@@ -25,9 +25,9 @@
       "n": 50,
       "n_error": 33,
       "n_correct": 17,
-      "error_acc": 0.3939393939393939,
-      "correct_acc": 0.6470588235294118,
-      "f1": 0.48972602739726023,
+      "error_acc": 0.42424242424242425,
+      "correct_acc": 0.5882352941176471,
+      "f1": 0.4929577464788733,
       "well_defined": true
     },
     "omnimath": {
@@ -35,13 +35,13 @@
       "n": 50,
       "n_error": 38,
       "n_correct": 12,
-      "error_acc": 0.42105263157894735,
-      "correct_acc": 0.5,
-      "f1": 0.45714285714285713,
+      "error_acc": 0.23684210526315788,
+      "correct_acc": 0.4166666666666667,
+      "f1": 0.30201342281879195,
       "well_defined": true
     }
   },
-  "average_f1": 0.5003864695817057,
+  "average_f1": 0.46302095202827664,
   "subset_order": [
     "gsm8k",
     "math",

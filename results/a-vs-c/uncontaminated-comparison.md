@@ -1,8 +1,8 @@
 # Condition A (baseline) vs Condition B (retrieval)
 
-- A: `runs/int4-a`
-- B: `runs/int4-c`
-- **Filtered: pool-contaminated solutions removed, per runs/contamination.json** (633 solution(s) removed from both conditions). The `n` column below is what survived, so these numbers are not comparable with the unfiltered table.
+- A: `results/int4-a`
+- B: `results/int4-c`
+- **Filtered: pool-contaminated solutions removed, per results/contamination.json** (633 solution(s) removed from both conditions). The `n` column below is what survived, so these numbers are not comparable with the unfiltered table.
 
 | Subset | n | OOD | F1 (A) | F1 (B) | Δ F1 | 95% CI on Δ | McNemar p | Sig. |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
