@@ -99,3 +99,61 @@ def neutralise_broken_pyarrow(force: bool = False) -> bool:
         reason,
     )
     return True
+
+
+def hide_unusable_datasets(force: bool = False) -> bool:
+    """Hide `datasets` when pyarrow loads but its Parquet extension does not.
+
+    The second failure shape. An Application Control policy can block only
+    ``pyarrow._dataset_parquet``: ``import pyarrow`` then succeeds, so the shim above never
+    engages, but ``import datasets`` dies with an AttributeError while defining its classes.
+    sentence-transformers decides whether `datasets` is available from package *metadata*
+    alone and imports it unconditionally when it is, so the retrieval encoder cannot load.
+
+    Evaluation never needs `datasets` (ProcessBench is read as JSON, the pool and index are
+    local files), so the fix is to make it look uninstalled: package metadata reports it
+    missing and ``sys.modules`` holds ``None``, which makes ``import datasets`` raise and
+    ``importlib.util.find_spec`` return None. `scripts/build_pool.py` genuinely needs
+    `datasets` and will still fail on such a machine. No-op when Parquet support loads.
+    """
+    import importlib.metadata as metadata
+
+    if isinstance(metadata.metadata, _HiddenPackageMetadata):
+        return False
+
+    if not force:
+        try:
+            importlib.import_module("pyarrow")
+        except ImportError:
+            return False  # absent, or already handled by neutralise_broken_pyarrow
+        try:
+            importlib.import_module("pyarrow._dataset_parquet")
+            return False  # healthy
+        except ImportError as exc:
+            reason = f"pyarrow's Parquet extension is unusable: {exc}"
+    else:
+        reason = "hidden for testing"
+
+    metadata.metadata = _HiddenPackageMetadata(metadata.metadata, "datasets")
+    sys.modules["datasets"] = None
+    logger.warning(
+        "%s. Hiding `datasets` so the retrieval encoder still loads; building the pool "
+        "will not work on this machine. See src/rapfprm/compat.py.",
+        reason,
+    )
+    return True
+
+
+class _HiddenPackageMetadata:
+    """Wraps ``importlib.metadata.metadata`` so one package reports as not installed."""
+
+    def __init__(self, original, hidden: str) -> None:
+        self.original = original
+        self.hidden = hidden
+
+    def __call__(self, name: str):
+        import importlib.metadata as metadata
+
+        if name == self.hidden:
+            raise metadata.PackageNotFoundError(name)
+        return self.original(name)
