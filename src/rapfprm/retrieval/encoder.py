@@ -109,7 +109,17 @@ class MeanPoolingEncoder:
 
     It does NOT reproduce models whose pipeline has extra modules (a trained dense layer,
     CLS pooling, ...). `build_encoder` warns when it falls back for that reason.
+
+    Both halves of "reproduces" matter, and an earlier version got the second one wrong:
+    it returned the raw mean pool, whose norm is about 5.8 for this model. The index's PCA
+    is fitted on unit vectors, so an unnormalised query lands far from where Sentence-BERT
+    puts it, and retrieval returned neighbours ranked in the hundreds or thousands. The
+    Normalize step and the 256-token limit below are what make the two encoders agree.
     """
+
+    #: Sentence-BERT's `max_seq_length` for all-MiniLM-L6-v2 (sentence_bert_config.json).
+    #: The tokenizer alone would allow 512, which embeds long texts differently.
+    MAX_SEQ_LENGTH = 256
 
     def __init__(self, model_name: str, device: str | None = None) -> None:
         import torch
@@ -131,7 +141,11 @@ class MeanPoolingEncoder:
         for start in range(0, len(texts), batch_size):
             batch = [t if t else " " for t in texts[start : start + batch_size]]
             encoded = self._tokenizer(
-                batch, padding=True, truncation=True, max_length=512, return_tensors="pt"
+                batch,
+                padding=True,
+                truncation=True,
+                max_length=self.MAX_SEQ_LENGTH,
+                return_tensors="pt",
             ).to(self._device)
 
             with torch.no_grad():
@@ -143,7 +157,9 @@ class MeanPoolingEncoder:
             counts = mask.sum(dim=1).clamp(min=1e-9)
             outputs.append((summed / counts).float().cpu().numpy())
 
-        return np.vstack(outputs).astype(np.float32)
+        # Sentence-BERT's final Normalize module. Without it the PCA in the index is applied
+        # to vectors on the wrong scale and retrieval silently degrades.
+        return l2_normalise(np.vstack(outputs).astype(np.float32))
 
 
 def build_encoder(name: str, device: str | None = None) -> Encoder:

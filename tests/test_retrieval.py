@@ -394,3 +394,27 @@ def test_random_references_are_less_similar_than_retrieved_ones(big_pool):
         control.stats.as_dict()["mean_step_similarity"]
         < treatment.stats.as_dict()["mean_step_similarity"]
     )
+
+
+def test_mean_pooling_fallback_matches_sentence_bert():
+    """The fallback must reproduce Sentence-BERT, not merely point the same way.
+
+    An earlier fallback skipped the Normalize step. Directions agreed (cosine 1.0) but the
+    norms were ~5.8, the index's PCA put those queries in the wrong place, and retrieval
+    silently returned far-off neighbours. Compare the vectors themselves, including a text
+    longer than the 256-token limit.
+    """
+    from rapfprm.retrieval.encoder import MeanPoolingEncoder, SbertEncoder
+
+    name = "sentence-transformers/all-MiniLM-L6-v2"
+    try:
+        reference = SbertEncoder(name, device="cpu")
+        fallback = MeanPoolingEncoder(name, device="cpu")
+    except Exception as exc:  # noqa: BLE001 - needs the model and a working install
+        pytest.skip(f"Sentence-BERT unavailable here: {exc}")
+
+    texts = ["What is 2 + 3?", "Step 1: expand (x + 1)^2 = x^2 + 2x + 1.", "long " * 400]
+    expected, actual = reference.encode(texts), fallback.encode(texts)
+
+    np.testing.assert_allclose(np.linalg.norm(actual, axis=1), 1.0, atol=1e-5)
+    np.testing.assert_allclose(actual, expected, atol=1e-5)
