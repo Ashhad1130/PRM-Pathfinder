@@ -1,7 +1,7 @@
 # Condition A (baseline) vs Condition B (retrieval)
 
-- A: `runs/int4-a`
-- B: `runs/int4-d`
+- A: `results/int4-a`
+- B: `results/int4-d`
 
 | Subset | n | OOD | F1 (A) | F1 (B) | Δ F1 | 95% CI on Δ | McNemar p | Sig. |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

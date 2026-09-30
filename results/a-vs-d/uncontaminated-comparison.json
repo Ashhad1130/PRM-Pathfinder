@@ -1,8 +1,8 @@
 {
-  "run_a": "runs/int4-a",
-  "run_b": "runs/int4-d",
+  "run_a": "results/int4-a",
+  "run_b": "results/int4-d",
   "excluded_uids": 633,
-  "exclusion_label": "pool-contaminated solutions removed, per runs/contamination.json",
+  "exclusion_label": "pool-contaminated solutions removed, per results/contamination.json",
   "per_subset": [
     {
       "subset": "gsm8k",

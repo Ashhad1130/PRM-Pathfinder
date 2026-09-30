@@ -1,5 +1,5 @@
 run:
-  name: int4-b
+  name: int4-b-sbert
   out_dir: runs
   save_traces: true
   log_every: 10
@@ -53,4 +53,5 @@ prompt:
     evaluate the mathemetical correctness, logic consistency of the current step and
     whether it will lead to the correct final solution
   include_reference_labels: true
+  label_style: tokens
   max_reference_chars: 600

@@ -1,0 +1,58 @@
+{
+  "per_subset": {
+    "gsm8k": {
+      "subset": "gsm8k",
+      "n": 50,
+      "n_error": 26,
+      "n_correct": 24,
+      "error_acc": 0.5384615384615384,
+      "correct_acc": 0.9583333333333334,
+      "f1": 0.6895074946466808,
+      "well_defined": true
+    },
+    "math": {
+      "subset": "math",
+      "n": 50,
+      "n_error": 30,
+      "n_correct": 20,
+      "error_acc": 0.6333333333333333,
+      "correct_acc": 0.7,
+      "f1": 0.665,
+      "well_defined": true
+    },
+    "olympiadbench": {
+      "subset": "olympiadbench",
+      "n": 50,
+      "n_error": 33,
+      "n_correct": 17,
+      "error_acc": 0.5454545454545454,
+      "correct_acc": 0.7647058823529411,
+      "f1": 0.636734693877551,
+      "well_defined": true
+    },
+    "omnimath": {
+      "subset": "omnimath",
+      "n": 50,
+      "n_error": 38,
+      "n_correct": 12,
+      "error_acc": 0.5526315789473685,
+      "correct_acc": 0.5,
+      "f1": 0.525,
+      "well_defined": true
+    }
+  },
+  "average_f1": 0.629060547131058,
+  "subset_order": [
+    "gsm8k",
+    "math",
+    "olympiadbench",
+    "omnimath"
+  ],
+  "undefined_subsets": [],
+  "average_over": [
+    "gsm8k",
+    "math",
+    "olympiadbench",
+    "omnimath"
+  ]
+}

@@ -1,0 +1,57 @@
+run:
+  name: int4-e
+  out_dir: runs
+  save_traces: true
+  log_every: 10
+  resume: true
+data:
+  processbench_id: Qwen/ProcessBench
+  subsets:
+  - gsm8k
+  - math
+  - olympiadbench
+  - omnimath
+  limit_per_subset: 50
+  fixtures_dir: null
+  sample_seed: 17
+  pool_id: declare-lab/PathFinder-600K
+  pool_split: train
+  pool_max_items: 50000
+  pool_dir: data/pool
+retrieval:
+  enabled: true
+  encoder_name: sentence-transformers/all-MiniLM-L6-v2
+  encoder_batch_size: 128
+  normalize: true
+  pca_components: 128
+  pca_whiten: false
+  top_k_questions: 8
+  top_k_steps: 2
+  step_level: true
+  reference_mode: retrieved
+  random_seed: 17
+  max_question_similarity: 0.95
+  drop_exact_duplicates: true
+  index_dir: artifacts/index
+prm:
+  backend: int4
+  int4_group_size: 64
+  int4_packing_format: tile_packed_to_4d
+  model_name: declare-lab/PathFinder-PRM-7B
+  dtype: bfloat16
+  device_map: auto
+  attn_implementation: sdpa
+  trust_remote_code: true
+  max_memory: null
+  offload_folder: null
+  correctness_threshold: 0.5
+  early_stop: true
+  max_input_tokens: 4096
+  seed: 17
+prompt:
+  prompt_prefix: You are a Math Teacher. Given a question and a student's solution,
+    evaluate the mathemetical correctness, logic consistency of the current step and
+    whether it will lead to the correct final solution
+  include_reference_labels: true
+  label_style: words
+  max_reference_chars: 600
