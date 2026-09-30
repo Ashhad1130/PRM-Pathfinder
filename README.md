@@ -5,6 +5,8 @@
 Seminar project · Institute for Computational Linguistics, Heidelberg University
 Pratik Goyal & Ashhad Raza Quadri · Supervisor: Lei Tang
 
+**Report:** [`report/main.pdf`](report/main.pdf) (ACL format) · **Numbers:** [`docs/RESULTS.md`](docs/RESULTS.md) · **Artefacts:** [`results/`](results/)
+
 ---
 
 ## The question
@@ -18,6 +20,15 @@ error, then how good the step is. Nobody had combined them.
 > Does inserting retrieval in front of PathFinder-PRM's error-typing stage make it better at
 > identifying errors, especially on out-of-distribution problems — and does any gain survive
 > a length-matched control?
+
+Broken into three research questions:
+
+- **RQ1** Do retrieved references make PathFinder-PRM better at locating errors, and does
+  any gain grow on more out-of-distribution problems, as it does for RetrievalPRM?
+- **RQ2** Is any change due to the *relevance* of the references, or just the extra text?
+- **RQ3** Which part of a reference drives the change: the example, the judgement attached to
+  it, or the form in which that judgement is written? (Exploratory: it arose after the first
+  results.)
 
 No training, no new data. Inference only, on the released 7B checkpoint, with the model's
 prompt contract held byte-identical across conditions.
@@ -44,7 +55,7 @@ every query. Writing the identical judgement as *correct* / *incorrect* (E) reco
 points (E→B, 95% CI [−19.0, −7.7], p < 0.0001) and is indistinguishable from showing no
 label at all (D→E +2.0, [−2.2, +6.4]).
 
-**Relevance helps a little, and only where RetrievalPRM says it should.** C→B is +5.8
+**Relevance helps a little, mainly where RetrievalPRM says it should.** C→B is +5.8
 ([−1.1, +12.8], p = 0.10) on average, +2.3 once pool-contaminated items are dropped. It is
 ~0 on GSM8K and MATH and +14.4 / +11.6 on OlympiadBench and Omni-MATH, the hardest and
 uncontaminated subsets. Suggestive, not established, and never enough to offset the loss.
@@ -83,6 +94,7 @@ that is the important part of this repository.
 | Undefined ≠ zero | An absent population makes F1 undefined, and the metric says so instead of scoring it 0. This is what caught the sampling bug. |
 | Pooled contrasts | Per-subset McNemar runs out of discordant solutions at this scale; the pooled test does not. |
 | Frozen prompt contract | `<extra>` may never reach the user turn, the assistant turn must carry exactly two mask positions, and `scripts/verify_model_interface.py` re-checks both against the model card. |
+| Encoder parity | The transformers-only fallback encoder is tested against Sentence-BERT vector for vector, and B, D and E were checked to receive identical references. This is what caught the fallback bug. |
 
 ## Quickstart
 
@@ -93,12 +105,16 @@ pip install -r requirements.txt
 pip install -e .
 ```
 
-**Check the plumbing** — no GPU, no downloads, about five seconds:
+**Check the plumbing** — no GPU needed:
 
 ```bash
 python scripts/smoke.py
 pytest
 ```
+
+`smoke.py` needs no downloads and takes about five seconds. One test compares the fallback
+encoder with Sentence-BERT and downloads the 90 MB `all-MiniLM-L6-v2` on first run; it skips
+itself when the model cannot be loaded.
 
 `smoke.py` runs every stage against a mock PRM and bundled fixtures, and asserts that the
 control arm really is one: same reference count as the treatment, far lower similarity. Its
@@ -141,8 +157,9 @@ arms only within one precision; never an int4 number against a bf16 one.
 
 ## Hardware
 
-Measured on an RTX 5070 Laptop, 8 GB VRAM. A 7B in bf16 needs ~15.2 GB of weights, so the
-reported run uses int4 weight-only quantisation via torchao.
+Everything reported was run on one laptop: an Acer Nitro 16S AI with an NVIDIA GeForce
+RTX 5070 Laptop GPU (8 GB VRAM). A 7B in bf16 needs ~15.2 GB of weights, so the reported run
+uses int4 weight-only quantisation via torchao.
 
 | Backend | `prm.backend` | Needs | Notes |
 | --- | --- | --- | --- |
@@ -157,8 +174,20 @@ reported run uses int4 weight-only quantisation via torchao.
 measured quantity.
 
 Cost of the reported run, 200 solutions per arm: A 55 min, C 2 h 38 m, B 3 h 01 m,
-D 4 h 59 m, E about 5 h 35 m. The reference-carrying arms are slower because their prompts are two to three
-times longer; retrieval itself is about 1% of step time.
+D 4 h 59 m, E about 5 h 35 m; about 17 GPU hours for the five arms and about 40 hours for the
+whole project. The reference-carrying arms are slower because their prompts are two to three
+times longer; retrieval itself is about 1% of step time. The longest Omni-MATH solutions spill
+out of 8 GB into shared system RAM and can hit CUDA out-of-memory; rerun with `--resume`.
+
+### Windows: a blocked pyarrow
+
+A Windows Application Control policy can block pyarrow's DLLs, sometimes only its Parquet
+extension and sometimes only for a while. `sentence-transformers` then fails to import through
+`datasets`. `src/rapfprm/compat.py`, loaded by every script, handles both shapes: it hides
+pyarrow or `datasets` when they cannot load, so evaluation still works (only
+`scripts/build_pool.py` genuinely needs `datasets`). If the log says `Falling back to the
+transformers-only mean-pooling encoder`, retrieval is using the fallback, which is now
+numerically identical to Sentence-BERT.
 
 ## Layout
 
@@ -199,7 +228,10 @@ report/       the ACL-format seminar report (main.tex, main.pdf) and its analysi
 
 ## References
 
-- Zhu et al. (2025). *Retrieval-Augmented Process Reward Model*. arXiv:2502.14361
-- Pala et al. (2025). *Error Typing for Smarter Rewards*. arXiv:2505.19706
-- Zheng et al. (2024). *ProcessBench*. `Qwen/ProcessBench`
+- Zhu et al. (2025). *Retrieval-Augmented Process Reward Model for Generalizable Mathematical
+  Reasoning*. arXiv:2502.14361
+- Pala et al. (2025). *Error Typing for Smarter Rewards: Improving Process Reward Models with
+  Error-Aware Hierarchical Supervision*. arXiv:2505.19706
+- Zheng et al. (2024). *ProcessBench: Identifying Process Errors in Mathematical Reasoning*.
+  arXiv:2412.06559 · `Qwen/ProcessBench`
 - Model: `declare-lab/PathFinder-PRM-7B` · Pool: `declare-lab/PathFinder-600K`
